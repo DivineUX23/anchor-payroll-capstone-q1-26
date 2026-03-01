@@ -34,7 +34,7 @@ pub struct CFOWithdraw<'info> {
         mut,
         has_one = operator,
     )]
-    pub protocol: Account<'info, ProtocolVault>,
+    pub protocol: Box<Account<'info, ProtocolVault>>,
 
     /// CHECK:
     #[account(
@@ -48,7 +48,7 @@ pub struct CFOWithdraw<'info> {
         associated_token::authority = protocol_authority,
         associated_token::token_program = token_program
     )]
-    pub protocol_ata: InterfaceAccount<'info, TokenAccount>,
+    pub protocol_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
     #[account(
         mut,
@@ -56,7 +56,7 @@ pub struct CFOWithdraw<'info> {
         associated_token::authority = protocol_authority,
         associated_token::token_program = token_program
     )]
-    pub protocol_ktoken_ata: InterfaceAccount<'info, TokenAccount>,
+    pub protocol_ktoken_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
     /// CHECK:
     #[account(address = KAMINO_PROGRAM_ID)]

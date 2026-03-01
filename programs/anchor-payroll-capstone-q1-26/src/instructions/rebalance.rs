@@ -27,24 +27,16 @@ pub struct Rebalance<'info> {
     #[account(
         mut,
         associated_token::mint = usdc,
-        associated_token::authority = operator,
-        associated_token::token_program = token_program
-    )]
-    pub operator_ata: InterfaceAccount<'info, TokenAccount>,
-
-    #[account(
-        mut,
-        associated_token::mint = usdc,
         associated_token::authority = keeper,
         associated_token::token_program = token_program
     )]
-    pub keeper_ata: InterfaceAccount<'info, TokenAccount>,
+    pub keeper_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
     #[account(
         mut,
         has_one = operator,
     )]
-    pub protocol: Account<'info, ProtocolVault>,
+    pub protocol: Box<Account<'info, ProtocolVault>>,
     /// CHECK:
     #[account(
         seeds = [b"authority", protocol.key().as_ref()],
@@ -57,7 +49,7 @@ pub struct Rebalance<'info> {
         associated_token::authority = protocol_authority,
         associated_token::token_program = token_program
     )]
-    pub protocol_ata: InterfaceAccount<'info, TokenAccount>,
+    pub protocol_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
     #[account(
         mut,
@@ -65,11 +57,12 @@ pub struct Rebalance<'info> {
         associated_token::authority = protocol_authority,
         associated_token::token_program = token_program
     )]
-    pub protocol_ktoken_ata: InterfaceAccount<'info, TokenAccount>,
+    pub protocol_ktoken_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
     // add address = PLATFORM_TREASURY
     #[account(mut)]
-    pub platform_ata: InterfaceAccount<'info, TokenAccount>,
+    pub platform_ata: Box<InterfaceAccount<'info, TokenAccount>>,
+    
     /// CHECK:
     #[account(address = KAMINO_PROGRAM_ID)]
     pub kamino_program: AccountInfo<'info>,

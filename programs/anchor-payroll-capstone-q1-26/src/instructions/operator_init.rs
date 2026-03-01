@@ -13,14 +13,6 @@ pub struct OperatorInit<'info> {
     pub usdc: InterfaceAccount<'info, Mint>,
 
     #[account(
-        mut,
-        associated_token::mint = usdc,
-        associated_token::authority = operator,
-        associated_token::token_program = token_program
-    )]
-    pub operator_ata: InterfaceAccount<'info, TokenAccount>,
-
-    #[account(
         init,
         payer = operator,
         seeds = [b"protocol", operator.key().as_ref(), &seed.to_le_bytes().as_ref()],

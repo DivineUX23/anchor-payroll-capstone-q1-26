@@ -28,13 +28,13 @@ pub struct Deposit<'info> {
         associated_token::authority = operator,
         associated_token::token_program = token_program
     )]
-    pub operator_ata: InterfaceAccount<'info, TokenAccount>,
+    pub operator_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
     #[account(
         mut,
         has_one = operator,
     )]
-    pub protocol: Account<'info, ProtocolVault>,
+    pub protocol: Box<Account<'info, ProtocolVault>>,
 
     #[account(
         mut,
@@ -42,9 +42,9 @@ pub struct Deposit<'info> {
         associated_token::authority = operator,
         associated_token::token_program = token_program
     )]
-    pub protocol_ktoken_ata: InterfaceAccount<'info, TokenAccount>,
+    pub protocol_ktoken_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
-    // CHECK:
+    /// CHECK:
     #[account(address = KAMINO_PROGRAM_ID)]
     pub kamino_program: AccountInfo<'info>,
 
@@ -70,6 +70,7 @@ pub struct Deposit<'info> {
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
     pub token_program: Interface<'info, TokenInterface>,
+    
     /// CHECK:
     #[account(address = INSTRUCTIONS_ID)]
     pub instruction_sysvar_account: AccountInfo<'info>,

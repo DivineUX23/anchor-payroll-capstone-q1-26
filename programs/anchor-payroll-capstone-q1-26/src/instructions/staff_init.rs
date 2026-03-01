@@ -16,14 +16,6 @@ pub struct StaffInit<'info> {
 
     #[account(
         mut,
-        associated_token::mint = usdc,
-        associated_token::authority = staff,
-        associated_token::token_program = token_program
-    )]
-    pub staff_ata: InterfaceAccount<'info, TokenAccount>,
-
-    #[account(
-        mut,
         has_one = operator,
     )]
     pub protocol: Account<'info, ProtocolVault>,
