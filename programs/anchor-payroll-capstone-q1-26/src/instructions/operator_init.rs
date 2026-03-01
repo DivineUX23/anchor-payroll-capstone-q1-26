@@ -38,11 +38,12 @@ pub struct OperatorInit<'info> {
 impl <'info>OperatorInit<'info> {
     pub fn init(&mut self) -> Result<()> {
         self.protocol.set_inner(ProtocolVault {
+            operator: self.operator.key(),
             safety_amount: 0,
             yield_amount: 0,
             global_rate: 0,
             liability: 0,
-            liability_timestamp: 0,
+            liability_timestamp: Clock::get().unwrap().unix_timestamp as u64,
         });
         Ok(())
     }

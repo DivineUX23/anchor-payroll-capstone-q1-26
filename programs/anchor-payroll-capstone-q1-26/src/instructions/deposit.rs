@@ -34,8 +34,7 @@ pub struct Deposit<'info> {
     #[account(
         mut,
         close = operator,
-        seeds = [b"protocol", operator.key().as_ref(), seed.to_le_bytes().as_ref()],
-        bump
+        has_one = operator,
     )]
     pub protocol: Account<'info, ProtocolVault>,
 

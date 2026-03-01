@@ -44,19 +44,9 @@ pub struct Rebalance<'info> {
     #[account(
         mut,
         close = operator,
-        seeds = [b"protocol", operator.key().as_ref(), seed.to_le_bytes().as_ref()],
-        bump
+        has_one = operator,
     )]
     pub protocol: Account<'info, ProtocolVault>,
-
-
-    #[account(mut,
-        associated_token::mint = usdc,
-        associated_token::authority = protocol,
-        associated_token::token_program = token_program
-    )]
-    pub protocol_ata: InterfaceAccount<'info, TokenAccount>,
-
 
     #[account(
         seeds = [b"authority", protocol.key().as_ref()],
@@ -64,10 +54,17 @@ pub struct Rebalance<'info> {
     )]
     pub protocol_authority: AccountInfo<'info>,
 
+    #[account(mut,
+        associated_token::mint = usdc,
+        associated_token::authority = protocol_authority,
+        associated_token::token_program = token_program
+    )]
+    pub protocol_ata: InterfaceAccount<'info, TokenAccount>,
+
     #[account(
         mut,
-        associated_token::mint = usdc,
-        associated_token::authority = operator,
+        associated_token::mint = reserve_collateral_mint,
+        associated_token::authority = protocol_authority,
         associated_token::token_program = token_program
     )]
     pub protocol_ktoken_ata: InterfaceAccount<'info, TokenAccount>,
@@ -156,7 +153,7 @@ impl <'info>Rebalance<'info> {
             from: self.protocol_ata.to_account_info(),
             mint: self.usdc.to_account_info(),
             to: self.keeper_ata.to_account_info(),
-            authority: self.protocol.to_account_info(),
+            authority: self.protocol_authority.to_account_info(),
         };
         let keeper_cpi = CpiContext::new_with_signer(
             self.token_program.to_account_info(), 
@@ -170,7 +167,7 @@ impl <'info>Rebalance<'info> {
             from: self.protocol_ata.to_account_info(),
             mint: self.usdc.to_account_info(),
             to: self.platform_ata.to_account_info(),
-            authority: self.protocol.to_account_info(),
+            authority: self.protocol_authority.to_account_info(),
         };
         let tax_cpi = CpiContext::new_with_signer(
             self.token_program.to_account_info(), 
@@ -252,7 +249,7 @@ impl <'info>Rebalance<'info> {
             .ok_or(ProgramError::ArithmeticOverflow)?;
 
         self.protocol.yield_amount = self.protocol.yield_amount
-            .checked_sub(usdc_received)
+            .checked_sub(ktoken)
             .ok_or(ProgramError::ArithmeticOverflow)?;
 
         Ok(usdc_received)

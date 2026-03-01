@@ -34,18 +34,10 @@ pub struct CFOWithdraw<'info> {
     #[account(
         mut,
         close = operator,
-        seeds = [b"protocol", operator.key().as_ref(), seed.to_le_bytes().as_ref()],
-        bump
+        has_one = operator,
     )]
     pub protocol: Account<'info, ProtocolVault>,
 
-
-    #[account(mut,
-        associated_token::mint = usdc,
-        associated_token::authority = protocol,
-        associated_token::token_program = token_program
-    )]
-    pub protocol_ata: InterfaceAccount<'info, TokenAccount>,
 
     #[account(
         seeds = [b"authority", protocol.key().as_ref()],
@@ -53,17 +45,21 @@ pub struct CFOWithdraw<'info> {
     )]
     pub protocol_authority: AccountInfo<'info>,
 
+    #[account(mut,
+        associated_token::mint = usdc,
+        associated_token::authority = protocol_authority,
+        associated_token::token_program = token_program
+    )]
+    pub protocol_ata: InterfaceAccount<'info, TokenAccount>,
+
     #[account(
         mut,
-        associated_token::mint = usdc,
-        associated_token::authority = operator,
+        associated_token::mint = reserve_collateral_mint,
+        associated_token::authority = protocol_authority,
         associated_token::token_program = token_program
     )]
     pub protocol_ktoken_ata: InterfaceAccount<'info, TokenAccount>,
 
-    // add address = PLATFORM_TREASURY
-    #[account(mut)]
-    pub platform_ata: InterfaceAccount<'info, TokenAccount>,
 
     #[account(address = KAMINO_PROGRAM_ID)]
     pub kamino_program: AccountInfo<'info>,
@@ -96,8 +92,7 @@ impl <'info>CFOWithdraw<'info> {
 
     pub fn withdraw(&mut self, amount: u64, protocol_bump: u8) -> Result<()> {
 
-        let available_usdc = self.protocol.calculate_total_assets(&self.kamino_program)?;
-
+        let available_usdc = self.protocol.calculate_total_assets(&self.reserve)?;
         if available_usdc < amount {
             return Err(ProgramError::InsufficientFunds.into());
         };
@@ -106,27 +101,29 @@ impl <'info>CFOWithdraw<'info> {
         let signer_seeds: &[&[&[u8]]] = &[&[
             b"authority",
             binding.as_ref(),
-            &[protocol_bump],]
-        ];
+            &[protocol_bump],
+        ]];
 
-        if amount < self.protocol.safety_amount {
-            let _ = self.debit_safety(amount, signer_seeds);
-            return Ok(())
+        if amount > self.protocol.safety_amount {
+
+            let debit_pool = amount.checked_sub(self.protocol.safety_amount)
+                .ok_or(ProgramError::ArithmeticOverflow)?;
+
+            let (total_pool_usdc,  total_ktoken) = self.protocol.calculate_k_pool(&self.reserve)?;
+
+            let ktoken_to_burn = (debit_pool as u128)
+                .checked_mul(total_ktoken)
+                .and_then(|x| x.checked_div(total_pool_usdc))
+                .ok_or(ProgramError::ArithmeticOverflow)?
+                as u64;
+
+            let usdc_received = self.k_withdrawal(ktoken_to_burn, signer_seeds)?;
+            
+            self.protocol.safety_amount = self.protocol.safety_amount
+                .checked_add(usdc_received)
+                .ok_or(ProgramError::ArithmeticOverflow)?;
+
         }
-
-        let debit_pool = amount.checked_sub(self.protocol.safety_amount)
-            .ok_or(ProgramError::ArithmeticOverflow)?;
-
-        let (total_pool_usdc,  total_ktoken) = self.protocol.calculate_k_pool(&self.reserve)?;
-
-        let ktoken_to_burn = (debit_pool as u128)
-            .checked_mul(total_ktoken)
-            .and_then(|x| x.checked_div(total_pool_usdc))
-            .ok_or(ProgramError::ArithmeticOverflow)?
-            as u64;
-
-        let _ = self.k_withdrawal(ktoken_to_burn, signer_seeds)?;
-        
         let _ = self.debit_safety(amount, signer_seeds);
 
         self.protocol.safety_amount = self.protocol.safety_amount
@@ -145,21 +142,24 @@ impl <'info>CFOWithdraw<'info> {
             from: self.protocol_ata.to_account_info(),
             mint: self.usdc.to_account_info(),
             to: self.operator_ata.to_account_info(),
-            authority: self.protocol.to_account_info(),
+            authority: self.protocol_authority.to_account_info(),
         };
 
-        let withdraw_cpi = CpiContext::new_with_signer(self.token_program.to_account_info(), transfer_accounts, signer_seeds);
+        let withdraw_cpi = CpiContext::new_with_signer(
+            self.token_program.to_account_info(), 
+            transfer_accounts, 
+            signer_seeds
+        );
 
         transfer_checked(withdraw_cpi, amount, self.usdc.decimals)?;
-
         Ok(())
     }
 
 
-    pub fn k_withdrawal(&mut self, ktoken: u64, signer_seeds: &[&[&[u8]]]) -> Result<()> {
+    pub fn k_withdrawal(&mut self, ktoken: u64, signer_seeds: &[&[&[u8]]]) -> Result<u64> {
         
         if ktoken == 0 {
-            return Err(ProgramError::InvalidArgument.into());
+            return Ok(0);
         }
 
         let _ = self.protocol.update_liability();
@@ -216,10 +216,10 @@ impl <'info>CFOWithdraw<'info> {
             .ok_or(ProgramError::ArithmeticOverflow)?;
 
         self.protocol.yield_amount = self.protocol.yield_amount
-            .checked_sub(usdc_received)
+            .checked_sub(ktoken)
             .ok_or(ProgramError::ArithmeticOverflow)?;
 
-        Ok(())
+        Ok(usdc_received)
 
     }
 }
