@@ -8,8 +8,7 @@ use anchor_spl::{associated_token::AssociatedToken, token_interface::{Mint, Toke
 
 pub const KAMINO_PROGRAM_ID: Pubkey = pubkey!("KLend2g3cPENfacJ1B3121X7A62BwY75q25w1d8nLZk");
 pub const USDC_MINT: Pubkey = pubkey!("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v");
-pub const BOUNTY_AMOUNT: u64 = 100_000;
-pub const PLATFORM_TAX: u64 = 50;
+
 
 use crate::{get_sighash, state::{ProtocolVault}};
 
@@ -33,7 +32,6 @@ pub struct CFOWithdraw<'info> {
 
     #[account(
         mut,
-        close = operator,
         has_one = operator,
     )]
     pub protocol: Account<'info, ProtocolVault>,

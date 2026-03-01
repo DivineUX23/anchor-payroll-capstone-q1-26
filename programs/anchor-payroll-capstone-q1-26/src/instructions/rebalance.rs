@@ -14,7 +14,6 @@ pub const PLATFORM_TAX: u64 = 50;
 use crate::{get_sighash, state::{ProtocolVault}};
 
 #[derive(Accounts)]
-#[instruction(seed: u64)]
 pub struct Rebalance<'info> {
 
     #[account(mut)]
@@ -43,7 +42,6 @@ pub struct Rebalance<'info> {
 
     #[account(
         mut,
-        close = operator,
         has_one = operator,
     )]
     pub protocol: Account<'info, ProtocolVault>,

@@ -1,24 +1,13 @@
 use anchor_lang::prelude::*;
-use anchor_lang::solana_program::sysvar::instructions::ID as INSTRUCTIONS_ID;
 use anchor_spl::{associated_token::AssociatedToken, token_interface::{Mint, TokenAccount, TokenInterface, TransferChecked, transfer_checked}};
-
-pub const KAMINO_PROGRAM_ID: Pubkey = pubkey!("KLend2g3cPENfacJ1B3121X7A62BwY75q25w1d8nLZk");
-pub const USDC_MINT: Pubkey = pubkey!("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v");
-pub const BOUNTY_AMOUNT: u64 = 100_000;
-pub const PLATFORM_TAX: u64 = 50;
-
 use crate::StaffAccount;
 use crate::state::{ProtocolVault};
 
 #[derive(Accounts)]
-#[instruction(seed: u64)]
 pub struct StaffClaim<'info> {
 
     #[account(mut)]
-    pub operator: Signer<'info>,
-
-
-    pub staff: AccountInfo<'info>,
+    pub staff: Signer<'info>,
 
     #[account(mint::token_program = token_program)]
     pub usdc: InterfaceAccount<'info, Mint>,
@@ -33,24 +22,12 @@ pub struct StaffClaim<'info> {
 
     #[account(
         mut,
-        close = operator,
+        constraint = staff_account.active == true @ ProgramError::InvalidAccountData
     )]
     pub staff_account: Account<'info, StaffAccount>,
 
 
-    #[account(
-        mut,
-        associated_token::mint = usdc,
-        associated_token::authority = operator,
-        associated_token::token_program = token_program
-    )]
-    pub operator_ata: InterfaceAccount<'info, TokenAccount>,
-
-    #[account(
-        mut,
-        close = operator,
-        has_one = operator,
-    )]
+    #[account(mut)]
     pub protocol: Account<'info, ProtocolVault>,
 
     #[account(
@@ -69,34 +46,35 @@ pub struct StaffClaim<'info> {
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
     pub token_program: Interface<'info, TokenInterface>,
-
-    #[account(address = INSTRUCTIONS_ID)]
-    pub instruction_sysvar_account: AccountInfo<'info>,
 }
 
 
 impl <'info>StaffClaim<'info> {
 
-    pub fn withdraw(&mut self, amount: u64, protocol_bump: u8) -> Result<()> {
+    pub fn claim(&mut self, protocol_bump: u8) -> Result<()> {
 
         let _ = self.protocol.update_liability();
 
-        let time = Clock::get().unwrap().unix_timestamp as u64;
+        let current_time = Clock::get().unwrap().unix_timestamp as u64;
 
-        let time_passed = time.checked_sub(self.staff_account.time_started)
+        let time_passed = current_time
+            .checked_sub(self.staff_account.time_started)
             .ok_or(ProgramError::ArithmeticOverflow)?;
 
-        let claimable_salary = self.staff_account.rate.checked_mul(time_passed)
-            .and_then(|x| x.checked_div(self.staff_account.total_claimed))
+        let claimable_salary = self.staff_account.rate
+            .checked_mul(time_passed)
+            .and_then(|x| x.checked_sub(self.staff_account.total_claimed))
             .ok_or(ProgramError::ArithmeticOverflow)?;
 
 
         if claimable_salary == 0 {
+            msg!("No salary earned yet.");
             return Err(ProgramError::InsufficientFunds.into());
         }
 
 
         if self.protocol.safety_amount < claimable_salary {
+            msg!("Protocol treasury is illiquid. Await Keeper Rebalance");
             return Err(ProgramError::InsufficientFunds.into())
         }
 
@@ -108,10 +86,18 @@ impl <'info>StaffClaim<'info> {
         ]];
 
 
-        let _ = self.debit_safety(amount, signer_seeds);
+        let _ = self.debit_safety(claimable_salary, signer_seeds);
 
         self.protocol.safety_amount = self.protocol.safety_amount
-            .checked_sub(amount)
+            .checked_sub(claimable_salary)
+            .ok_or(ProgramError::ArithmeticOverflow)?;
+
+        self.staff_account.total_claimed = self.staff_account.total_claimed
+            .checked_add(claimable_salary)
+            .ok_or(ProgramError::ArithmeticOverflow)?;
+
+        self.protocol.liability = self.protocol.liability
+            .checked_sub(claimable_salary)
             .ok_or(ProgramError::ArithmeticOverflow)?;
 
         Ok(())

@@ -14,7 +14,6 @@ pub const USDC_MINT: Pubkey = pubkey!("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTD
 
 
 #[derive(Accounts)]
-#[instruction(seed: u64)]
 pub struct Deposit<'info> {
 
     #[account(mut)]
@@ -33,7 +32,6 @@ pub struct Deposit<'info> {
 
     #[account(
         mut,
-        close = operator,
         has_one = operator,
     )]
     pub protocol: Account<'info, ProtocolVault>,

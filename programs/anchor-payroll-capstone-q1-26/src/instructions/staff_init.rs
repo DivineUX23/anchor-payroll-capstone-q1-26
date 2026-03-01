@@ -24,7 +24,6 @@ pub struct StaffInit<'info> {
 
     #[account(
         mut,
-        close = operator,
         has_one = operator,
     )]
     pub protocol: Account<'info, ProtocolVault>,

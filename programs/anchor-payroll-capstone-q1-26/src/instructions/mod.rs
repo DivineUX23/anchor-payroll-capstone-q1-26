@@ -15,3 +15,6 @@ pub use staff_init::*;
 
 pub mod claim;
 pub use claim::*;
+
+pub mod offboard;
+pub use offboard::*;
