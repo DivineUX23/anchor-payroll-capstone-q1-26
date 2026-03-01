@@ -14,10 +14,35 @@ declare_id!("J9asff4gKxeauMugW9SVQkmTocdGYnX5SCoBoqSp7MU9");
 pub mod anchor_payroll_capstone_q1_26 {
     use super::*;
 
-    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
-        msg!("Greetings from: {:?}", ctx.program_id);
-        Ok(())
+    pub fn operator_init(ctx: Context<OperatorInit>, seed: u64) -> Result<()> {
+        ctx.accounts.init()
     }
+
+    pub fn deposit(ctx: Context<Deposit>, deposit: u64) -> Result<()> {
+        ctx.accounts.transfer(deposit)
+    }
+
+    pub fn cfo_withdraw(ctx: Context<CFOWithdraw>, amount: u64) -> Result<()> {
+        ctx.accounts.withdraw(amount, &ctx.bumps)
+    }
+
+    pub fn rebalance(ctx: Context<Rebalance>) -> Result<()> {
+        ctx.accounts.rebalance_pay(&ctx.bumps)
+    }
+
+    pub fn staff_init(ctx: Context<StaffInit>, annualized_salary: u64, seed: u64) -> Result<()> {
+        ctx.accounts.init(annualized_salary)
+    }
+
+    pub fn staff_claim(ctx: Context<StaffClaim>) -> Result<()> {
+        ctx.accounts.claim(&ctx.bumps)
+    }
+
+    pub fn staff_offboard(ctx: Context<StaffOffboard>) -> Result<()> {
+        ctx.accounts.claim_and_close(&ctx.bumps)
+    }
+
+
 }
 
 #[derive(Accounts)]

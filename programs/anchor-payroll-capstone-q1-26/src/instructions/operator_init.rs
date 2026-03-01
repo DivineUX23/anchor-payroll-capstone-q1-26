@@ -23,7 +23,7 @@ pub struct OperatorInit<'info> {
     #[account(
         init,
         payer = operator,
-        seeds = [b"protocol", operator.key().as_ref(), seed.to_le_bytes().as_ref()],
+        seeds = [b"protocol", operator.key().as_ref(), &seed.to_le_bytes().as_ref()],
         space = ProtocolVault::DISCRIMINATOR.len() + ProtocolVault::INIT_SPACE,
         bump,
     )]

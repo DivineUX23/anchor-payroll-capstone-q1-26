@@ -51,7 +51,7 @@ pub struct StaffClaim<'info> {
 
 impl <'info>StaffClaim<'info> {
 
-    pub fn claim(&mut self, protocol_bump: u8) -> Result<()> {
+    pub fn claim(&mut self, bump: &StaffClaimBumps) -> Result<()> {
 
         let _ = self.protocol.update_liability();
 
@@ -82,7 +82,7 @@ impl <'info>StaffClaim<'info> {
         let signer_seeds: &[&[&[u8]]] = &[&[
             b"authority",
             binding.as_ref(),
-            &[protocol_bump],
+            &[bump.protocol_authority],
         ]];
 
 

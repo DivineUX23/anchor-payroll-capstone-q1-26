@@ -57,7 +57,7 @@ pub struct StaffOffboard<'info> {
 
 impl <'info>StaffOffboard<'info> {
 
-    pub fn claim_and_close(&mut self, protocol_bump: u8) -> Result<()> {
+    pub fn claim_and_close(&mut self, bump: &StaffOffboardBumps) -> Result<()> {
 
         let _ = self.protocol.update_liability();
 
@@ -84,7 +84,7 @@ impl <'info>StaffOffboard<'info> {
             let signer_seeds: &[&[&[u8]]] = &[&[
                 b"authority",
                 binding.as_ref(),
-                &[protocol_bump],
+                &[bump.protocol_authority],
             ]];
 
 

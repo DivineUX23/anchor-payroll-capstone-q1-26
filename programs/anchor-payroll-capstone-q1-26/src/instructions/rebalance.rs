@@ -100,7 +100,7 @@ pub struct Rebalance<'info> {
 
 impl <'info>Rebalance<'info> {
 
-    pub fn rebalance_pay(&mut self, protocol_bump: u8) -> Result<()> {
+    pub fn rebalance_pay(&mut self, bump: &RebalanceBumps) -> Result<()> {
 
         let required_usdc = self.protocol.update_protocol();
 
@@ -136,8 +136,8 @@ impl <'info>Rebalance<'info> {
         let signer_seeds: &[&[&[u8]]] = &[&[
             b"authority",
             binding.as_ref(),
-            &[protocol_bump],]
-        ];
+            &[bump.protocol_authority],
+        ]];
 
         // Execute CPI to Kamino to withdraw `required_usdc`
         let usdc_recieved = self.k_withdrawal(ktoken_to_burn, signer_seeds)?;

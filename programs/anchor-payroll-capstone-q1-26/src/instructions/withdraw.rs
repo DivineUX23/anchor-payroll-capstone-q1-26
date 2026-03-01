@@ -88,7 +88,7 @@ pub struct CFOWithdraw<'info> {
 
 impl <'info>CFOWithdraw<'info> {
 
-    pub fn withdraw(&mut self, amount: u64, protocol_bump: u8) -> Result<()> {
+    pub fn withdraw(&mut self, amount: u64, bump: &CFOWithdrawBumps) -> Result<()> {
 
         let available_usdc = self.protocol.calculate_total_assets(&self.reserve)?;
         if available_usdc < amount {
@@ -99,7 +99,7 @@ impl <'info>CFOWithdraw<'info> {
         let signer_seeds: &[&[&[u8]]] = &[&[
             b"authority",
             binding.as_ref(),
-            &[protocol_bump],
+            &[bump.protocol_authority],
         ]];
 
         if amount > self.protocol.safety_amount {
