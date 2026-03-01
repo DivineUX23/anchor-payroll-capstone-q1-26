@@ -81,7 +81,8 @@ impl <'info>Deposit<'info> {
             return Err(ProgramError::InvalidArgument.into());
         }
 
-        self.protocol.update_global_liability();
+        let _ = self.protocol.update_global_liability();
+        
         let ktoken_balance_before = self.protocol_ktoken_ata.amount;
 
         let mut data = get_sighash("deposit_reserve_liquidity").to_vec();

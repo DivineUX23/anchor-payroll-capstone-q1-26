@@ -192,13 +192,13 @@ impl <'info>Rebalance<'info> {
 
 
 
-    pub fn k_withdrawal(&mut self, ktoken: u64, signer_seeds: &[&[&[u8]]]) -> Result<(u64)> {
+    pub fn k_withdrawal(&mut self, ktoken: u64, signer_seeds: &[&[&[u8]]]) -> Result<u64> {
         
         if ktoken == 0 {
             return Err(ProgramError::InvalidArgument.into());
         }
 
-        self.protocol.update_global_liability();
+        let _ = self.protocol.update_global_liability();
         let balance_before = self.protocol_ata.amount;
 
         let mut data = get_sighash("redeem_reserve_collateral").to_vec();
