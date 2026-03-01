@@ -1,6 +1,5 @@
 use anchor_lang::prelude::*;
 use crate::state::{Reserve};
-use solana_program::account_info::AccountInfo;
 
 #[account]
 #[derive(InitSpace)]
@@ -39,39 +38,52 @@ impl ProtocolVault {
         }
     }
 
-    pub fn calculate_liquid_capital(&self, k_info: &AccountInfo) -> Result<u64> {
+    
 
+    pub fn calculate_k_pool(&self, k_info: &AccountInfo) -> Result<(u128, u128)> {
         let reserve_data = k_info.try_borrow_data()
             .map_err(|_| ProgramError::InvalidAccountData)?;
 
-        let reserve_size = size_of::<Reserve>();
+        let reserve_size = std::mem::size_of::<Reserve>();
         if reserve_data.len() < reserve_size + 8 {
             return Err(ProgramError::InvalidAccountData)?;
         }
 
-
         let k_reserve: &Reserve = bytemuck::try_from_bytes(&reserve_data[8..8 + reserve_size])
             .map_err(|_| ProgramError::InvalidAccountData)?;
 
-        let wad: u128 = 1000000000000000000;
+        //let wad: u128 = 1000000000000000000;
+        let wad: u128 = 1_000_000_000_000_000_000;
 
-        let available_liq_sf = (k_reserve.liquidity.available_amount as u128)
+        let available_sf = (k_reserve.liquidity.available_amount as u128)
             .checked_mul(wad)
             .ok_or(ProgramError::InvalidAccountData)?;
 
-        let borrowed_liq_sf = (k_reserve.liquidity.borrowed_amount_sf[0] as u128) 
+        let borrowed_sf = (k_reserve.liquidity.borrowed_amount_sf[0] as u128) 
             | ((k_reserve.liquidity.borrowed_amount_sf[1] as u128) << 64);
 
-        let protocol_fees_sf = (k_reserve.liquidity.accumulated_protocol_fees_sf[0] as u128) 
+        let fees_sf = (k_reserve.liquidity.accumulated_protocol_fees_sf[0] as u128) 
             | ((k_reserve.liquidity.accumulated_protocol_fees_sf[1] as u128) << 64);
 
-        let total_pool_liq = available_liq_sf
-            .checked_add(borrowed_liq_sf)
-            .and_then(|x| x.checked_sub(protocol_fees_sf))
+        let total_pool_usdc = available_sf
+            .checked_add(borrowed_sf)
+            .and_then(|x| x.checked_sub(fees_sf))
             .ok_or(ProgramError::ArithmeticOverflow)?
             / wad;
 
         let total_ktoken: u128 = k_reserve.collateral.mint_total_supply as u128;
+
+        drop(reserve_data);
+        
+        Ok((total_pool_usdc, total_ktoken))
+    }
+
+
+
+    pub fn calculate_liquid_capital(&self, k_info: &AccountInfo) -> Result<u64> {
+
+        let (total_pool_usdc,  total_ktoken) = self.calculate_k_pool(k_info)?;
+
         if total_ktoken == 0 {
             return Ok(self.safety_amount);
         }
@@ -79,7 +91,7 @@ impl ProtocolVault {
         let cfo_ktoken_balance = self.yield_amount as u128;
 
         let cfo_usdc = cfo_ktoken_balance
-            .checked_mul(total_pool_liq)
+            .checked_mul(total_pool_usdc)
             .and_then(|v| v.checked_div(total_ktoken))
             .ok_or(ProgramError::ArithmeticOverflow)?;
 
