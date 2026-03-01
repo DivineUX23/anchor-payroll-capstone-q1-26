@@ -19,7 +19,7 @@ impl ProtocolVault {
 
     }
 
-    pub fn calculate_liquid_capital(
+    pub fn calculate_total_assets(
         &self, 
         kamino_reserve_info: &AccountInfo
     ) {
@@ -60,7 +60,7 @@ impl ProtocolVault {
         }
     }
 
-    pub fn update_protocol_vault() {
+    pub fn update_protocol() {
         let daily_burn_rate = self.global_active_rate * 3600 * 24;
         let two_days = 3600 * 48;
         
@@ -154,7 +154,7 @@ impl CFODeposit {
             return Err(ErrorCode::ZeroFunds);
         }
 
-        self.protocol_vault.update_global_liability();
+        self.protocol_vault.update_liability();
 
         let ktoken_balance_before = self.protocol_ktokn_ata.amount;
 
@@ -246,7 +246,7 @@ impl Rebalance {
             return Ok(());
         }
 
-        let required_extraction = self.protocol_vault.update_protocol_vault()
+        let required_extraction = self.protocol_vault.update_protocol()
 
         if required_extraction <= 0 {
             msg!("Warning: Protocol is already balanced.");
@@ -331,7 +331,7 @@ pub struct CFOWithdraw  {
 impl CFOWithdraw  {
     pub fn transfer (&mut self, requested_amount: u64) {
 
-        let liquid_capital = self.protocol_vault.calculate_liquid_capital();
+        let liquid_capital = self.protocol_vault.calculate_total_assets();
 
         if requested_amount > liquid_capital {
             panic!("Withdrawal exceeds non-liable treasury assets.");

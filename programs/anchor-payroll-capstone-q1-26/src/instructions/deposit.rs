@@ -81,7 +81,7 @@ impl <'info>Deposit<'info> {
             return Err(ProgramError::InvalidArgument.into());
         }
 
-        let _ = self.protocol.update_global_liability();
+        let _ = self.protocol.update_liability();
         
         let ktoken_balance_before = self.protocol_ktoken_ata.amount;
 

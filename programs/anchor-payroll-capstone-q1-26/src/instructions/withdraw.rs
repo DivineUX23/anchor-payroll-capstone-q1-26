@@ -15,12 +15,10 @@ use crate::{get_sighash, state::{ProtocolVault}};
 
 #[derive(Accounts)]
 #[instruction(seed: u64)]
-pub struct Rebalance<'info> {
+pub struct CFOWithdraw<'info> {
 
     #[account(mut)]
-    pub keeper: Signer<'info>,
-
-    pub operator: AccountInfo<'info>,
+    pub operator: Signer<'info>,
 
     #[account(mint::token_program = token_program)]
     pub usdc: InterfaceAccount<'info, Mint>,
@@ -32,14 +30,6 @@ pub struct Rebalance<'info> {
         associated_token::token_program = token_program
     )]
     pub operator_ata: InterfaceAccount<'info, TokenAccount>,
-
-    #[account(
-        mut,
-        associated_token::mint = usdc,
-        associated_token::authority = keeper,
-        associated_token::token_program = token_program
-    )]
-    pub keeper_ata: InterfaceAccount<'info, TokenAccount>,
 
     #[account(
         mut,
@@ -56,7 +46,6 @@ pub struct Rebalance<'info> {
         associated_token::token_program = token_program
     )]
     pub protocol_ata: InterfaceAccount<'info, TokenAccount>,
-
 
     #[account(
         seeds = [b"authority", protocol.key().as_ref()],
@@ -103,39 +92,15 @@ pub struct Rebalance<'info> {
 }
 
 
-impl <'info>Rebalance<'info> {
+impl <'info>CFOWithdraw<'info> {
 
-    pub fn rebalance_pay(&mut self, protocol_bump: u8) -> Result<()> {
+    pub fn withdraw(&mut self, amount: u64, protocol_bump: u8) -> Result<()> {
 
-        let required_usdc = self.protocol.update_protocol();
+        let available_usdc = self.protocol.calculate_total_assets(&self.kamino_program)?;
 
-        if required_usdc == 0 {
-            msg!("Warning: Protocol is already balanced.");
-            return Ok(()); 
-        }
-
-        let platform_tax: u64 = required_usdc
-            .checked_mul(PLATFORM_TAX)
-            .and_then(|x| x.checked_div(10000))
-            .ok_or(ProgramError::ArithmeticOverflow)?;
-
-        let total_ddt = BOUNTY_AMOUNT
-            .checked_add(platform_tax)            
-            .ok_or(ProgramError::ArithmeticOverflow)?;
-
-
-        let (total_pool_usdc,  total_ktoken) = self.protocol.calculate_k_pool(&self.reserve)?;
-        
-        if (total_pool_usdc as u64) < total_ddt {
-            msg!("Warning: Lending pool illiquid. Extraction deferred.");
-            return Ok(()); 
-        }
-
-        let ktoken_to_burn = (required_usdc as u128)
-            .checked_mul(total_ktoken)
-            .and_then(|x| x.checked_div(total_pool_usdc))
-            .ok_or(ProgramError::ArithmeticOverflow)?
-            as u64;
+        if available_usdc < amount {
+            return Err(ProgramError::InsufficientFunds.into());
+        };
 
         let binding = self.protocol.to_account_info().key();
         let signer_seeds: &[&[&[u8]]] = &[&[
@@ -144,44 +109,28 @@ impl <'info>Rebalance<'info> {
             &[protocol_bump],]
         ];
 
-        // Execute CPI to Kamino to withdraw `required_usdc`
-        let usdc_recieved = self.k_withdrawal(ktoken_to_burn, signer_seeds)?;
-        
-        if usdc_recieved < total_ddt {
-            return Err(ProgramError::InsufficientFunds.into());
+        if amount < self.protocol.safety_amount {
+            let _ = self.debit_safety(amount, signer_seeds);
+            return Ok(())
         }
 
-        // Send bounty
-        let bounty_accounts = TransferChecked {
-            from: self.protocol_ata.to_account_info(),
-            mint: self.usdc.to_account_info(),
-            to: self.keeper_ata.to_account_info(),
-            authority: self.protocol.to_account_info(),
-        };
-        let keeper_cpi = CpiContext::new_with_signer(
-            self.token_program.to_account_info(), 
-            bounty_accounts,
-            signer_seeds
-        );
-        transfer_checked(keeper_cpi, BOUNTY_AMOUNT, self.usdc.decimals)?;
+        let debit_pool = amount.checked_sub(self.protocol.safety_amount)
+            .ok_or(ProgramError::ArithmeticOverflow)?;
 
-        //platform Tax
-        let tax_accounts = TransferChecked {
-            from: self.protocol_ata.to_account_info(),
-            mint: self.usdc.to_account_info(),
-            to: self.platform_ata.to_account_info(),
-            authority: self.protocol.to_account_info(),
-        };
-        let tax_cpi = CpiContext::new_with_signer(
-            self.token_program.to_account_info(), 
-            tax_accounts,
-            signer_seeds
-        );
-        transfer_checked(tax_cpi, platform_tax, self.usdc.decimals)?;
+        let (total_pool_usdc,  total_ktoken) = self.protocol.calculate_k_pool(&self.reserve)?;
+
+        let ktoken_to_burn = (debit_pool as u128)
+            .checked_mul(total_ktoken)
+            .and_then(|x| x.checked_div(total_pool_usdc))
+            .ok_or(ProgramError::ArithmeticOverflow)?
+            as u64;
+
+        let _ = self.k_withdrawal(ktoken_to_burn, signer_seeds)?;
+        
+        let _ = self.debit_safety(amount, signer_seeds);
 
         self.protocol.safety_amount = self.protocol.safety_amount
-            .checked_add(usdc_recieved)
-            .and_then(|x| x.checked_sub(total_ddt))
+            .checked_sub(amount)
             .ok_or(ProgramError::ArithmeticOverflow)?;
         //self.protocol.yield_amount -= (required_usdc + total_ddt);
 
@@ -190,9 +139,24 @@ impl <'info>Rebalance<'info> {
     }
 
 
+    pub fn debit_safety(&mut self, amount: u64, signer_seeds: &[&[&[u8]]]) -> Result<()> {
+
+        let transfer_accounts = TransferChecked{
+            from: self.protocol_ata.to_account_info(),
+            mint: self.usdc.to_account_info(),
+            to: self.operator_ata.to_account_info(),
+            authority: self.protocol.to_account_info(),
+        };
+
+        let withdraw_cpi = CpiContext::new_with_signer(self.token_program.to_account_info(), transfer_accounts, signer_seeds);
+
+        transfer_checked(withdraw_cpi, amount, self.usdc.decimals)?;
+
+        Ok(())
+    }
 
 
-    pub fn k_withdrawal(&mut self, ktoken: u64, signer_seeds: &[&[&[u8]]]) -> Result<u64> {
+    pub fn k_withdrawal(&mut self, ktoken: u64, signer_seeds: &[&[&[u8]]]) -> Result<()> {
         
         if ktoken == 0 {
             return Err(ProgramError::InvalidArgument.into());
@@ -255,7 +219,7 @@ impl <'info>Rebalance<'info> {
             .checked_sub(usdc_received)
             .ok_or(ProgramError::ArithmeticOverflow)?;
 
-        Ok(usdc_received)
+        Ok(())
 
     }
 }

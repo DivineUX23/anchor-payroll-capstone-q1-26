@@ -13,7 +13,7 @@ pub struct ProtocolVault {
 }
 
 impl ProtocolVault {
-    pub fn update_global_liability(&mut self) -> Result<()> {
+    pub fn update_liability(&mut self) -> Result<()> {
         let current_time = Clock::get().unwrap().unix_timestamp;
         let time_delta = current_time as u64 - self.liability_timestamp;
 
@@ -24,7 +24,7 @@ impl ProtocolVault {
     }
 
 
-    pub fn update_protocol_vault(&mut self) -> u64 {
+    pub fn update_protocol(&mut self) -> u64 {
         let daily_burn_rate = self.global_rate * 3600 * 24;
         let two_days = 3600 * 48;
         
@@ -80,7 +80,7 @@ impl ProtocolVault {
 
 
 
-    pub fn calculate_liquid_capital(&self, k_info: &AccountInfo) -> Result<u64> {
+    pub fn calculate_total_assets(&self, k_info: &AccountInfo) -> Result<u64> {
 
         let (total_pool_usdc,  total_ktoken) = self.calculate_k_pool(k_info)?;
 
