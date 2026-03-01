@@ -18,7 +18,7 @@ pub struct Rebalance<'info> {
 
     #[account(mut)]
     pub keeper: Signer<'info>,
-
+    /// CHECK:
     pub operator: AccountInfo<'info>,
 
     #[account(mint::token_program = token_program)]
@@ -45,7 +45,7 @@ pub struct Rebalance<'info> {
         has_one = operator,
     )]
     pub protocol: Account<'info, ProtocolVault>,
-
+    /// CHECK:
     #[account(
         seeds = [b"authority", protocol.key().as_ref()],
         bump
@@ -70,19 +70,20 @@ pub struct Rebalance<'info> {
     // add address = PLATFORM_TREASURY
     #[account(mut)]
     pub platform_ata: InterfaceAccount<'info, TokenAccount>,
-
+    /// CHECK:
     #[account(address = KAMINO_PROGRAM_ID)]
     pub kamino_program: AccountInfo<'info>,
-    
+    /// CHECK:
     #[account(mut)]
     pub reserve: AccountInfo<'info>,
-
+    /// CHECK:
     pub lending_market: AccountInfo<'info>,
+    /// CHECK:
     pub lending_market_authority: AccountInfo<'info>,
 
     #[account(address = USDC_MINT)]
     pub reserve_liquidity_mint: InterfaceAccount<'info, Mint>,
-
+    /// CHECK:
     #[account(mut)]
     pub reserve_liquidity_supply: AccountInfo<'info>,
 
@@ -93,6 +94,7 @@ pub struct Rebalance<'info> {
     pub system_program: Program<'info, System>,
     pub token_program: Interface<'info, TokenInterface>,
 
+    /// CHECK:
     #[account(address = INSTRUCTIONS_ID)]
     pub instruction_sysvar_account: AccountInfo<'info>,
 }

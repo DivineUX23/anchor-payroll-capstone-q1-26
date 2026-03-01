@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 use crate::state::{BigFractionBytes, ReserveFees, BorrowRateCurve, TokenInfo, WithdrawalCaps};
 
 
-//#[derive(AnchorSerialize, AnchorDeserialize, Debug)]
+//#[derive( Debug)]
 #[derive(Debug, PartialEq, Eq)]
 #[zero_copy]
 #[repr(C)]
@@ -40,7 +40,7 @@ pub struct ReserveLiquidity {
     pub padding3: [u64; 64],
 }
 
-//#[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
+//#[derive( Clone, Debug)]
 #[derive(Debug, PartialEq, Eq)]
 #[zero_copy]
 #[repr(C)]
@@ -55,7 +55,7 @@ pub struct ReserveCollateral {
 }
 
 
-#[derive(AnchorSerialize, AnchorDeserialize, PartialEq, Eq, Default)] //Derivative
+#[derive(PartialEq, Eq, Default)] //Derivative
 //#[derivative(Debug)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 #[cfg_attr(feature = "serde", serde(deny_unknown_fields))]

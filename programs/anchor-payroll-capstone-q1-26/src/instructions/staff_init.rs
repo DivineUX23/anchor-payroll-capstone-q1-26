@@ -8,7 +8,7 @@ pub struct StaffInit<'info> {
 
     #[account(mut)]
     pub operator: Signer<'info>,
-
+    /// CHECK:
     pub staff: AccountInfo<'info>,
 
     #[account(mint::token_program = token_program)]

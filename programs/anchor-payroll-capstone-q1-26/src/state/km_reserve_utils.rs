@@ -6,7 +6,7 @@ pub const TOKEN_INFO_SIZE: usize = 384;
 
 //static_assertions::const_assert_eq!(TOKEN_INFO_SIZE, std::mem::size_of::<TokenInfo>());
 //static_assertions::const_assert_eq!(0, std::mem::size_of::<TokenInfo>() % 8);
-#[derive(AnchorSerialize, AnchorDeserialize, PartialEq, Eq, Default)]
+#[derive(PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 #[cfg_attr(feature = "serde", serde(deny_unknown_fields))]
 #[zero_copy]
@@ -31,7 +31,7 @@ pub struct TokenInfo {
     pub padding: [u64; 19],
 }
 
-#[derive(AnchorSerialize, AnchorDeserialize, Debug, Default, PartialEq, Eq)]
+#[derive(Debug, Default, PartialEq, Eq)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 #[cfg_attr(feature = "serde", serde(deny_unknown_fields))]
 #[zero_copy]
@@ -41,14 +41,14 @@ pub struct CurvePoint {
     pub borrow_rate_bps: u32,
 }
 
-#[derive(AnchorSerialize, AnchorDeserialize, Default, Debug, PartialEq, Eq)]
+#[derive(Default, Debug, PartialEq, Eq)]
 #[zero_copy]
 #[repr(C)]
 pub struct BorrowRateCurve {
     pub points: [CurvePoint; 11],
 }
 
-#[derive(AnchorSerialize, AnchorDeserialize, Default, PartialEq, Eq)]//, Derivative)]
+#[derive(Default, PartialEq, Eq)]//, Derivative)]
 //#[derivative(Debug)]
 #[zero_copy]
 #[repr(C)]
@@ -61,7 +61,7 @@ pub struct ReserveFees {
 }
 
 
-#[derive(AnchorSerialize, AnchorDeserialize, PartialEq, Eq, Default, Debug)]
+#[derive(PartialEq, Eq, Default, Debug)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 #[zero_copy]
 #[repr(C)]

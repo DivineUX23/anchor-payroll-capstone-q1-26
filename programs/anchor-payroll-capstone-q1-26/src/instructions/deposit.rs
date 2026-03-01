@@ -47,17 +47,20 @@ pub struct Deposit<'info> {
     // CHECK:
     #[account(address = KAMINO_PROGRAM_ID)]
     pub kamino_program: AccountInfo<'info>,
-    
+
+    /// CHECK:
     #[account(mut)]
     pub reserve: AccountInfo<'info>,
 
+    /// CHECK:
     pub lending_market: AccountInfo<'info>,
+    /// CHECK:
     pub lending_market_authority: AccountInfo<'info>,
 
     #[account(address = USDC_MINT)]
     pub reserve_liquidity_mint: InterfaceAccount<'info, Mint>,
 
-    // CHECK: Kamino vault
+    /// CHECK: Kamino vault
     #[account(mut)]
     pub reserve_liquidity_supply: AccountInfo<'info>,
 
@@ -67,7 +70,7 @@ pub struct Deposit<'info> {
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
     pub token_program: Interface<'info, TokenInterface>,
-
+    /// CHECK:
     #[account(address = INSTRUCTIONS_ID)]
     pub instruction_sysvar_account: AccountInfo<'info>,
 }

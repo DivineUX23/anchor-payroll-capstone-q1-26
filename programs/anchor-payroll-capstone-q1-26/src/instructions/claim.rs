@@ -30,6 +30,7 @@ pub struct StaffClaim<'info> {
     #[account(mut)]
     pub protocol: Account<'info, ProtocolVault>,
 
+    /// CHECK: The PDA that owns the protocol's USDC
     #[account(
         seeds = [b"authority", protocol.key().as_ref()],
         bump

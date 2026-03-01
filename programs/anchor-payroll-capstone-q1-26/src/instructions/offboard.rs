@@ -8,7 +8,7 @@ pub struct StaffOffboard<'info> {
 
     #[account(mut)]
     pub operator: Signer<'info>,
-
+    /// CHECK:
     pub staff: AccountInfo<'info>,
 
     #[account(mint::token_program = token_program)]
@@ -34,7 +34,7 @@ pub struct StaffOffboard<'info> {
         has_one = operator,
     )]
     pub protocol: Account<'info, ProtocolVault>,
-
+    /// CHECK:
     #[account(
         seeds = [b"authority", protocol.key().as_ref()],
         bump

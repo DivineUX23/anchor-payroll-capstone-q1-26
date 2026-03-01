@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-#[derive(AnchorSerialize, AnchorDeserialize, Debug)]
+#[derive(Debug)]
 #[zero_copy]
 #[repr(C)]
 pub struct LastUpdate {
@@ -24,7 +24,7 @@ pub struct BigFractionBytes {
     pub padding: [u64; 2],
 }
 
-#[derive(AnchorSerialize, AnchorDeserialize, Debug, PartialEq, Eq, Default)]
+#[derive(Debug, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 #[cfg_attr(feature = "serde", serde(deny_unknown_fields))]
 #[zero_copy]
@@ -36,7 +36,7 @@ pub struct PriceHeuristic {
 }
 
 
-#[derive(AnchorSerialize, AnchorDeserialize, Debug, PartialEq, Eq, Default)]
+#[derive(Debug, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 #[zero_copy]
 #[repr(transparent)]
@@ -46,7 +46,7 @@ pub struct PythConfiguration {
 }
 
 
-#[derive(AnchorSerialize, AnchorDeserialize, Debug, PartialEq, Eq, Default)]
+#[derive(Debug, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 #[cfg_attr(feature = "serde", serde(deny_unknown_fields))]
 #[zero_copy]
@@ -57,7 +57,7 @@ pub struct ScopeConfiguration {
     pub twap_chain: [u16; 4],
 }
 
-#[derive(AnchorSerialize, AnchorDeserialize, Debug, PartialEq, Eq, Default)]
+#[derive(Debug, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 #[cfg_attr(feature = "serde", serde(deny_unknown_fields))]
 #[zero_copy]
