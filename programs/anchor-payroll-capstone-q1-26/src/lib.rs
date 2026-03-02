@@ -14,8 +14,8 @@ declare_id!("J9asff4gKxeauMugW9SVQkmTocdGYnX5SCoBoqSp7MU9");
 pub mod anchor_payroll_capstone_q1_26 {
     use super::*;
 
-    pub fn operator_init(ctx: Context<OperatorInit>, seed: u64) -> Result<()> {
-        ctx.accounts.init(seed)
+    pub fn operator_init(ctx: Context<OperatorInit>) -> Result<()> {
+        ctx.accounts.init()
     }
 
     pub fn deposit(ctx: Context<Deposit>, deposit: u64) -> Result<()> {
@@ -30,7 +30,7 @@ pub mod anchor_payroll_capstone_q1_26 {
         ctx.accounts.rebalance_pay(&ctx.bumps)
     }
 
-    pub fn staff_init(ctx: Context<StaffInit>, annualized_salary: u64, seed: u64) -> Result<()> {
+    pub fn staff_init(ctx: Context<StaffInit>, annualized_salary: u64) -> Result<()> {
         ctx.accounts.init(annualized_salary)
     }
 

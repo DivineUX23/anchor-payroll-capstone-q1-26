@@ -1,9 +1,9 @@
 use anchor_lang::prelude::*;
-use anchor_spl::{associated_token::AssociatedToken, token_interface::{Mint, TokenInterface}};
+use anchor_spl::{associated_token::AssociatedToken, token_interface::{TokenInterface}};
 use crate::state::ProtocolVault;
 
 #[derive(Accounts)]
-#[instruction(seed: u64)]
+//#[instruction(seed: u64)]
 pub struct OperatorInit<'info> {
 
     #[account(mut)]
@@ -12,7 +12,8 @@ pub struct OperatorInit<'info> {
     #[account(
         init,
         payer = operator,
-        seeds = [b"protocol", operator.key().as_ref(), &seed.to_le_bytes().as_ref()],
+        //seeds = [b"protocol", operator.key().as_ref(), &seed.to_le_bytes().as_ref()],
+        seeds = [b"protocol", operator.key().as_ref()],
         space = ProtocolVault::DISCRIMINATOR.len() + ProtocolVault::INIT_SPACE,
         bump,
     )]
@@ -24,9 +25,9 @@ pub struct OperatorInit<'info> {
 }
 
 impl <'info>OperatorInit<'info> {
-    pub fn init(&mut self, seed: u64) -> Result<()> {
+    pub fn init(&mut self) -> Result<()> {
         self.protocol.set_inner(ProtocolVault {
-            seed,
+            //seed,
             operator: self.operator.key(),
             safety_amount: 0,
             yield_amount: 0,

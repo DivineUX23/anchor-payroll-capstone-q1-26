@@ -1,9 +1,8 @@
 use anchor_lang::prelude::*;
-use anchor_spl::{associated_token::AssociatedToken, token_interface::{Mint, TokenInterface}};
+use anchor_spl::{associated_token::AssociatedToken, token_interface::{TokenInterface}};
 use crate::{ProtocolVault, state::StaffAccount};
 
 #[derive(Accounts)]
-#[instruction(seed: u64)]
 pub struct StaffInit<'info> {
 
     #[account(mut)]
@@ -20,7 +19,7 @@ pub struct StaffInit<'info> {
     #[account(
         init,
         payer = operator,
-        seeds = [b"staff", staff.key().as_ref(), seed.to_le_bytes().as_ref()],
+        seeds = [b"staff", staff.key().as_ref()],
         space = StaffAccount::DISCRIMINATOR.len() + StaffAccount::INIT_SPACE,
         bump,
     )]

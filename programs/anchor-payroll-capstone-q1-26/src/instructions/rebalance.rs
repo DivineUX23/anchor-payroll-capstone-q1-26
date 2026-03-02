@@ -85,7 +85,7 @@ pub struct Rebalance<'info> {
 
     /// CHECK:
     #[account(address = INSTRUCTIONS_ID)]
-    pub instruction_sysvar_account: AccountInfo<'info>,
+    pub instruction_sysvar: AccountInfo<'info>,
 }
 
 
@@ -203,7 +203,7 @@ impl <'info>Rebalance<'info> {
             AccountMeta::new(self.token_program.key(), false),
             AccountMeta::new_readonly(self.token_program.key(), false),
             AccountMeta::new_readonly(self.token_program.key(), false),
-            AccountMeta::new_readonly(self.instruction_sysvar_account.key(), false),
+            AccountMeta::new_readonly(self.instruction_sysvar.key(), false),
         ];
 
         
@@ -226,7 +226,7 @@ impl <'info>Rebalance<'info> {
                 self.protocol_ktoken_ata.to_account_info(),
                 self.protocol_ata.to_account_info(),
                 self.token_program.to_account_info(),
-                self.instruction_sysvar_account.to_account_info(),
+                self.instruction_sysvar.to_account_info(),
             ],
             signer_seeds,
         )?;

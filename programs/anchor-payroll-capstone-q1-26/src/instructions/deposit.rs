@@ -32,10 +32,17 @@ pub struct Deposit<'info> {
     )]
     pub protocol: Box<Account<'info, ProtocolVault>>,
 
+    /// CHECK:
+    #[account(
+        seeds = [b"authority", protocol.key().as_ref()],
+        bump
+    )]
+    pub protocol_authority: AccountInfo<'info>,
+
     #[account(
         mut,
-        associated_token::mint = usdc,
-        associated_token::authority = operator,
+        associated_token::mint = reserve_collateral_mint,
+        associated_token::authority = protocol_authority,
         associated_token::token_program = token_program
     )]
     pub protocol_ktoken_ata: Box<InterfaceAccount<'info, TokenAccount>>,
@@ -69,7 +76,7 @@ pub struct Deposit<'info> {
 
     /// CHECK:
     #[account(address = INSTRUCTIONS_ID)]
-    pub instruction_sysvar_account: AccountInfo<'info>,
+    pub instruction_sysvar: AccountInfo<'info>,
 }
 
 impl <'info>Deposit<'info> {
@@ -97,7 +104,7 @@ impl <'info>Deposit<'info> {
             AccountMeta::new(self.protocol_ktoken_ata.key(), false),
             AccountMeta::new_readonly(self.token_program.key(), false),
             AccountMeta::new_readonly(self.token_program.key(), false),
-            AccountMeta::new_readonly(self.instruction_sysvar_account.key(), false),
+            AccountMeta::new_readonly(self.instruction_sysvar.key(), false),
         ];
 
         
@@ -121,7 +128,7 @@ impl <'info>Deposit<'info> {
                 self.protocol_ktoken_ata.to_account_info(),
                 self.token_program.to_account_info(),
                 self.token_program.to_account_info(),
-                self.instruction_sysvar_account.to_account_info(),
+                self.instruction_sysvar.to_account_info(),
             
             ]
         )?;
