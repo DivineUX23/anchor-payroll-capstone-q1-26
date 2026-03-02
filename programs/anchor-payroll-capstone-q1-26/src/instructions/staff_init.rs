@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-use anchor_spl::{associated_token::AssociatedToken, token_interface::{Mint, TokenAccount, TokenInterface}};
+use anchor_spl::{associated_token::AssociatedToken, token_interface::{Mint, TokenInterface}};
 use crate::{ProtocolVault, state::StaffAccount};
 
 #[derive(Accounts)]
@@ -10,9 +10,6 @@ pub struct StaffInit<'info> {
     pub operator: Signer<'info>,
     /// CHECK:
     pub staff: AccountInfo<'info>,
-
-    #[account(mint::token_program = token_program)]
-    pub usdc: InterfaceAccount<'info, Mint>,
 
     #[account(
         mut,

@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-use anchor_spl::{associated_token::AssociatedToken, token_interface::{Mint, TokenAccount, TokenInterface}};
+use anchor_spl::{associated_token::AssociatedToken, token_interface::{Mint, TokenInterface}};
 use crate::state::ProtocolVault;
 
 #[derive(Accounts)]
@@ -8,9 +8,6 @@ pub struct OperatorInit<'info> {
 
     #[account(mut)]
     pub operator: Signer<'info>,
-
-    #[account(mint::token_program = token_program)]
-    pub usdc: InterfaceAccount<'info, Mint>,
 
     #[account(
         init,
@@ -27,8 +24,9 @@ pub struct OperatorInit<'info> {
 }
 
 impl <'info>OperatorInit<'info> {
-    pub fn init(&mut self) -> Result<()> {
+    pub fn init(&mut self, seed: u64) -> Result<()> {
         self.protocol.set_inner(ProtocolVault {
+            seed,
             operator: self.operator.key(),
             safety_amount: 0,
             yield_amount: 0,

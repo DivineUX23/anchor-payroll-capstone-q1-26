@@ -15,7 +15,7 @@ pub mod anchor_payroll_capstone_q1_26 {
     use super::*;
 
     pub fn operator_init(ctx: Context<OperatorInit>, seed: u64) -> Result<()> {
-        ctx.accounts.init()
+        ctx.accounts.init(seed)
     }
 
     pub fn deposit(ctx: Context<Deposit>, deposit: u64) -> Result<()> {

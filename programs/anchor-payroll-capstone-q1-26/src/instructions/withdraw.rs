@@ -6,11 +6,10 @@ use anchor_lang::solana_program::{
 use anchor_lang::solana_program::sysvar::instructions::ID as INSTRUCTIONS_ID;
 use anchor_spl::{associated_token::AssociatedToken, token_interface::{Mint, TokenAccount, TokenInterface, TransferChecked, transfer_checked}};
 
-pub const KAMINO_PROGRAM_ID: Pubkey = pubkey!("KLend2g3cPENfacJ1B3121X7A62BwY75q25w1d8nLZk");
-pub const USDC_MINT: Pubkey = pubkey!("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v");
+use crate::state::{ProtocolVault};
+use crate::utils::{get_sighash, KAMINO_PROGRAM_ID, USDC_MINT};
 
 
-use crate::{get_sighash, state::{ProtocolVault}};
 
 #[derive(Accounts)]
 #[instruction(seed: u64)]

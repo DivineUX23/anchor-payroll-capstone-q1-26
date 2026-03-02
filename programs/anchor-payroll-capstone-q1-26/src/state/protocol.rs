@@ -4,10 +4,10 @@ use crate::state::{Reserve};
 #[account]
 #[derive(InitSpace)]
 pub struct ProtocolVault {
+    pub seed: u64,
     pub operator: Pubkey,
     pub safety_amount: u64,
     pub yield_amount: u64,
-
     pub global_rate: u64,
     pub liability: u64,
     pub liability_timestamp: u64
