@@ -13,3 +13,9 @@
 [2026-03-03--05-49-19 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:50516.
 [2026-03-03--05-49-20 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:50526.
 [2026-03-03--05-49-21 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:50528.
+[2026-03-03--05-52-16 INFO actix_server::accept] accept thread stopped
+[2026-03-03--05-52-16 INFO actix_server::worker] shutting down idle worker
+[2026-03-03--05-52-16 INFO actix_server::worker] shutting down idle worker
+[2026-03-03--05-52-16 INFO actix_server::worker] shutting down idle worker
+[2026-03-03--05-52-16 INFO actix_server::worker] shutting down idle worker
+[2026-03-03--05-52-16 INFO actix_server::worker] shutting down idle worker
