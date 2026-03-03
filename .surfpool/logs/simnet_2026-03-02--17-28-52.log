@@ -1,0 +1,18 @@
+[2026-03-02--17-28-53 INFO actix_server::builder] starting 5 workers
+[2026-03-02--17-28-53 INFO actix_server::server] Tokio runtime found; starting in existing Tokio runtime
+[2026-03-02--17-28-53 INFO actix_server::server] starting service: "actix-web-service-127.0.0.1:18488", workers: 5, listening on: 127.0.0.1:18488
+[2026-03-02--17-28-53 INFO parity_ws] Listening for new connections on 127.0.0.1:8900.
+[2026-03-02--17-33-05 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:38454.
+[2026-03-02--17-33-13 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:46358.
+[2026-03-02--17-33-14 ERROR litesvm] Program account J9asff4gKxeauMugW9SVQkmTocdGYnX5SCoBoqSp7MU9 is not executable.
+[2026-03-02--17-33-14 ERROR litesvm] Program account J9asff4gKxeauMugW9SVQkmTocdGYnX5SCoBoqSp7MU9 is not executable.
+[2026-03-02--17-33-14 ERROR litesvm] Program account J9asff4gKxeauMugW9SVQkmTocdGYnX5SCoBoqSp7MU9 is not executable.
+[2026-03-02--17-33-14 ERROR litesvm] Program account J9asff4gKxeauMugW9SVQkmTocdGYnX5SCoBoqSp7MU9 is not executable.
+[2026-03-02--17-33-14 ERROR litesvm] Program account J9asff4gKxeauMugW9SVQkmTocdGYnX5SCoBoqSp7MU9 is not executable.
+[2026-03-02--17-33-14 ERROR litesvm] Program account J9asff4gKxeauMugW9SVQkmTocdGYnX5SCoBoqSp7MU9 is not executable.
+[2026-03-02--17-43-17 INFO actix_server::worker] shutting down idle worker
+[2026-03-02--17-43-17 INFO actix_server::worker] shutting down idle worker
+[2026-03-02--17-43-17 INFO actix_server::worker] shutting down idle worker
+[2026-03-02--17-43-17 INFO actix_server::accept] accept thread stopped
+[2026-03-02--17-43-17 INFO actix_server::worker] shutting down idle worker
+[2026-03-02--17-43-17 INFO actix_server::worker] shutting down idle worker

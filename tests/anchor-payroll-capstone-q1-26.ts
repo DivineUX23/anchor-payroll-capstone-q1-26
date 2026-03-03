@@ -19,12 +19,15 @@ describe("anchor-payroll-capstone-q1-26", () => {
   const keeper = Keypair.generate();
 
   const KAMINO_PROGRAM_ID = new PublicKey("KLend2g3cP87fffoy8q1mQqGKjrxjC8boSyAYavgmjD");
-  const RESERVE = new PublicKey("Gv9ofvLgWk8B8iRzY8LVEe7vG8p2fH4PJDv9tD4kGv9W");
   const LENDING_MARKET = new PublicKey("7u3HeHxYDLhnCoErrtycNokbQYbWGzLs6JSDqGAv5PfF");
-  const LENDING_MARKET_AUTHORITY = new PublicKey("9G9mZpsqzUsS9XasB8eB99uVatS3G525C2S8v5h94Sxz");
   const RESERVE_LIQUIDITY_MINT = new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v");
-  const RESERVE_LIQUIDITY_SUPPLY = new PublicKey("8S994796U3Y67S9tN33H7t4F9tD4kGv9W8S994796U3");
-  const RESERVE_COLLATERAL_MINT = new PublicKey("9977R6Z8N8Y9S9tN33H7t4F9tD4kGv9W9977R6Z8N8");
+
+  //const RESERVE = Keypair.generate().publicKey;
+  const RESERVE = new PublicKey("Gv9ofvLgWk8B8iRzY8LVEe7vG8p2fH4PJDv9tD4kGv9W");
+
+  const LENDING_MARKET_AUTHORITY = Keypair.generate().publicKey;
+  const RESERVE_LIQUIDITY_SUPPLY = Keypair.generate().publicKey;
+  //const RESERVE_COLLATERAL_MINT = Keypair.generate().publicKey;
 
 
   let usdc: PublicKey;
@@ -36,11 +39,12 @@ describe("anchor-payroll-capstone-q1-26", () => {
   let Bump: number;
   let protocolKtokenAta: PublicKey;
   let instructionSysvar: PublicKey;
-
+  let RESERVE_COLLATERAL_MINT: PublicKey;
 
   const seed1 = new anchor.BN(1111);
 
-  const depositAmount = 5_000_000_000_000;
+  //const depositAmount = 50_000_000_000;
+  const depositAmount = "50000000000000000";
 
   before(async () => {
     await connection.requestAirdrop(staff.publicKey, 5_000_000_000);
@@ -69,13 +73,22 @@ describe("anchor-payroll-capstone-q1-26", () => {
       createAssociatedTokenAccountInstruction(operator.publicKey, operatorAta, operator.publicKey, usdc)
     )
     await provider.sendAndConfirm(operatorAtaTx);
-    await mintTo(connection, operator.payer, usdc, operatorAta, operator.payer, depositAmount);
+    await mintTo(connection, operator.payer, usdc, operatorAta, operator.payer, BigInt(depositAmount));
+
+
+    RESERVE_COLLATERAL_MINT = await createMint(connection, operator.payer, operator.publicKey, null, 6);
 
     protocolKtokenAta = getAssociatedTokenAddressSync(
       RESERVE_COLLATERAL_MINT,
       protocolAuthority,
       true
     )
+    const protocolKtokenAtaTx = new anchor.web3.Transaction().add(
+      createAssociatedTokenAccountInstruction(operator.publicKey, protocolKtokenAta, protocolAuthority, RESERVE_COLLATERAL_MINT)
+    )
+    await provider.sendAndConfirm(protocolKtokenAtaTx);
+    //await mintTo(connection, operator.payer, usdc, protocolKtokenAta, operator.payer, depositAmount);
+
 
   })
 
@@ -103,10 +116,42 @@ describe("anchor-payroll-capstone-q1-26", () => {
   });
 
 
+
+
+  it("Staff is initialized!", async () => {
+    // Add your test here.
+    const annualized_salary = new anchor.BN(5_000_000_000);
+
+    await program.methods
+      .staffInit(annualized_salary)
+      .accountsStrict({
+        operator: operator.publicKey,
+        staff: staff.publicKey,
+        protocol: protocol,
+        staffAccount: staffAccount,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        systemProgram: anchor.web3.SystemProgram.programId
+      })
+      .rpc();
+      const staffInfo = await program.account.staffAccount.fetch(staffAccount);
+      expect(Boolean(staffInfo.active)).to.equal(true);
+      expect(Number(staffInfo.rate)).to.greaterThan(0);
+      expect(Number(staffInfo.totalClaimed)).to.equal(0);
+      //expect(staffInfo.timeStarted).to.greaterThan(0);
+
+      const protocolInfo = await program.account.protocolVault.fetch(protocol);
+      expect(Number(protocolInfo.globalRate)).to.greaterThan(0);
+      //expect(Number(protocolInfo.liability)).to.greaterThan(0);
+
+  });
+
+
+
   
   it("Deposit is complete!", async () => {
     // Add your test here.
-    const deposit = new anchor.BN(50_000_000_000);
+    const deposit = new anchor.BN("50000000000000000");
     try {
       await program.methods
         .deposit(deposit)
@@ -139,37 +184,6 @@ describe("anchor-payroll-capstone-q1-26", () => {
       } catch (e) {
           console.log("Expected CPI Rejection due to Mock USDC Mint mismatch:", e.message);
       }
-  });
-
-
-  it("Staff is initialized!", async () => {
-    // Add your test here.
-    const annualized_salary = new anchor.BN(50_000);
-
-    await program.methods
-      .staffInit(annualized_salary)
-      .accountsStrict({
-        operator: operator.publicKey,
-        staff: staff.publicKey,
-        protocol: protocol,
-        staffAccount: staffAccount,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        systemProgram: anchor.web3.SystemProgram.programId
-      })
-      .rpc();
-      const staffInfo = await program.account.staffAccount.fetch(staffAccount);
-      expect(Boolean(staffInfo.active)).to.equal(true);
-      expect(Number(staffInfo.rate)).to.greaterThan(0);
-      expect(Number(staffInfo.totalClaimed)).to.equal(0);
-      //expect(staffInfo.timeStarted).to.greaterThan(0);
-
-
-      const protocolInfo = await program.account.protocolVault.fetch(protocol);
-      expect(Number(protocolInfo.globalRate)).to.greaterThan(0);
-      //expect(Number(protocolInfo.liability)).to.greaterThan(0);
-
-
   });
 
 });

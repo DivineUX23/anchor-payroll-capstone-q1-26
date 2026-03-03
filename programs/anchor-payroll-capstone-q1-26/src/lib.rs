@@ -8,7 +8,7 @@ pub use instructions::*;
 pub use state::*;
 pub use utils::*;
 
-declare_id!("J9asff4gKxeauMugW9SVQkmTocdGYnX5SCoBoqSp7MU9");
+declare_id!("2abcDeZg7dsyk4PKG52oauYCuNg8sQHjduYW5WCLBJfz");
 
 #[program]
 pub mod anchor_payroll_capstone_q1_26 {
