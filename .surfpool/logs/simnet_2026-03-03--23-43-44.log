@@ -4,3 +4,9 @@
 [2026-03-03--23-43-45 INFO parity_ws] Listening for new connections on 127.0.0.1:8900.
 [2026-03-03--23-44-49 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:45602.
 [2026-03-03--23-44-53 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:45614.
+[2026-03-03--23-49-51 INFO actix_server::accept] accept thread stopped
+[2026-03-03--23-49-51 INFO actix_server::worker] shutting down idle worker
+[2026-03-03--23-49-51 INFO actix_server::worker] shutting down idle worker
+[2026-03-03--23-49-51 INFO actix_server::worker] shutting down idle worker
+[2026-03-03--23-49-51 INFO actix_server::worker] shutting down idle worker
+[2026-03-03--23-49-51 INFO actix_server::worker] shutting down idle worker

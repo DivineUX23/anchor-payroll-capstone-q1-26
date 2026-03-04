@@ -1,0 +1,17 @@
+[2026-03-04--17-50-41 INFO actix_server::builder] starting 5 workers
+[2026-03-04--17-50-41 INFO actix_server::server] Tokio runtime found; starting in existing Tokio runtime
+[2026-03-04--17-50-41 INFO actix_server::server] starting service: "actix-web-service-127.0.0.1:18488", workers: 5, listening on: 127.0.0.1:18488
+[2026-03-04--17-50-42 INFO parity_ws] Listening for new connections on 127.0.0.1:8900.
+[2026-03-04--17-52-08 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:59070.
+[2026-03-04--17-52-19 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:60992.
+[2026-03-04--17-52-21 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:60996.
+[2026-03-04--17-52-26 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:60998.
+[2026-03-04--17-52-27 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:32780.
+[2026-03-04--17-52-44 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:58234.
+[2026-03-04--17-52-55 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:58894.
+[2026-03-04--17-52-57 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:58904.
+[2026-03-04--17-58-35 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:60240.
+[2026-03-04--17-58-46 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:49440.
+[2026-03-04--17-58-48 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:49456.
+[2026-03-04--17-58-48 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:49464.
+[2026-03-04--17-58-54 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:49470.

@@ -30,7 +30,7 @@ impl ProtocolVault {
 
         let WAD: u128 = 1_000_000_000_000_000_000;
 
-        let available_liquidity = kamino_reserve.liquidity.available_amount as u128;
+        let available_liquidity = kamino_reserve.liquidity.total_available_amount as u128;
         let borrowed_liquidity = kamino_reserve.liquidity.borrowed_amount_sf / WAD; 
         let protocol_fees = kamino_reserve.liquidity.accumulated_protocol_fees_sf / WAD;
 

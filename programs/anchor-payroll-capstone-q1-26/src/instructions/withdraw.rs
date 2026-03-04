@@ -115,6 +115,8 @@ impl <'info>CFOWithdraw<'info> {
                 .ok_or(ProgramError::ArithmeticOverflow)?
                 as u64;
 
+            let ktoken_to_burn = ktoken_to_burn.min(self.protocol_ktoken_ata.amount);
+
             let usdc_received = self.k_withdrawal(ktoken_to_burn, signer_seeds)?;
             
             self.protocol.safety_amount = self.protocol.safety_amount
@@ -176,7 +178,6 @@ impl <'info>CFOWithdraw<'info> {
             AccountMeta::new(self.reserve_liquidity_supply.key(), false),
             AccountMeta::new(self.protocol_ktoken_ata.key(), false),
             AccountMeta::new(self.protocol_ata.key(), false),
-            AccountMeta::new(self.token_program.key(), false),
             AccountMeta::new_readonly(self.token_program.key(), false),
             AccountMeta::new_readonly(self.token_program.key(), false),
             AccountMeta::new_readonly(self.instruction_sysvar.key(), false),
@@ -201,6 +202,7 @@ impl <'info>CFOWithdraw<'info> {
                 self.reserve_liquidity_supply.to_account_info(),
                 self.protocol_ktoken_ata.to_account_info(),
                 self.protocol_ata.to_account_info(),
+                self.token_program.to_account_info(),
                 self.token_program.to_account_info(),
                 self.instruction_sysvar.to_account_info(),
             ],

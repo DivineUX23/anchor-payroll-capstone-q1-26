@@ -20,7 +20,7 @@ pub struct StaffOffboard<'info> {
         associated_token::authority = staff,
         associated_token::token_program = token_program
     )]
-    pub staff_ata: InterfaceAccount<'info, TokenAccount>,
+    pub staff_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
     #[account(
         mut,
@@ -103,7 +103,7 @@ impl <'info>StaffOffboard<'info> {
                 .ok_or(ProgramError::ArithmeticOverflow)?;
 
 
-            let _ = self.close_staff_account(signer_seeds);
+            //let _ = self.close_staff_account(signer_seeds);
 
         }
 
@@ -138,12 +138,12 @@ impl <'info>StaffOffboard<'info> {
         Ok(())
     }
 
-
+    /*
     pub fn close_staff_account(&mut self, signer_seeds: &[&[&[u8]]]) -> Result<()> {
 
         let close_accounts = CloseAccount{
             account: self.staff_account.to_account_info(),
-            destination: self.protocol_ata.to_account_info(),
+            destination: self.operator.to_account_info(),
             authority: self.protocol_authority.to_account_info(),
         };
 
@@ -155,5 +155,6 @@ impl <'info>StaffOffboard<'info> {
 
         close_account(close_cpi)
     }
+    */
 
 }

@@ -27,9 +27,7 @@ impl ProtocolVault {
 
     pub fn update_protocol(&mut self) -> u64 {
         let daily_burn_rate = self.global_rate * 3600 * 24;
-        let two_days = 3600 * 48;
-        
-        let vault_target = (daily_burn_rate * two_days * 12) / 10;
+        let vault_target = (daily_burn_rate * 2 * 12) / 10;
 
         if self.safety_amount < vault_target {
             let to_safety = vault_target - self.safety_amount;
@@ -53,8 +51,7 @@ impl ProtocolVault {
         let k_reserve: &Reserve = bytemuck::try_from_bytes(&reserve_data[8..8 + reserve_size])
             .map_err(|_| ProgramError::InvalidAccountData)?;
 
-        //let wad: u128 = 1000000000000000000;
-        let wad: u128 = 1_000_000_000_000_000_000;
+        let wad: u128 = 1u128 << 64;
 
         let available_sf = (k_reserve.liquidity.available_amount as u128)
             .checked_mul(wad)
@@ -73,6 +70,9 @@ impl ProtocolVault {
             / wad;
 
         let total_ktoken: u128 = k_reserve.collateral.mint_total_supply as u128;
+
+        msg!("calculate_k_pool - available: {}, borrowed_sf: {}, fees_sf: {}", k_reserve.liquidity.available_amount, borrowed_sf, fees_sf);
+        msg!("calculate_k_pool - total_pool_usdc: {}, total_ktoken: {}", total_pool_usdc, total_ktoken);
 
         drop(reserve_data);
         

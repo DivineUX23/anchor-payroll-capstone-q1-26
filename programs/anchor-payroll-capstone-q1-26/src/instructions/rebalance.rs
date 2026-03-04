@@ -16,6 +16,8 @@ pub struct Rebalance<'info> {
     pub keeper: Signer<'info>,
     /// CHECK:
     pub operator: AccountInfo<'info>,
+    /// CHECK:
+    pub platform: AccountInfo<'info>,
 
     #[account(mint::token_program = token_program)]
     pub usdc: InterfaceAccount<'info, Mint>,
@@ -56,7 +58,12 @@ pub struct Rebalance<'info> {
     pub protocol_ktoken_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
     // add address = PLATFORM_TREASURY
-    #[account(mut)]
+    //#[account(mut)]
+    #[account(mut,
+        associated_token::mint = usdc,
+        associated_token::authority = platform,
+        associated_token::token_program = token_program
+    )]
     pub platform_ata: Box<InterfaceAccount<'info, TokenAccount>>,
     
     /// CHECK:
@@ -93,12 +100,18 @@ impl <'info>Rebalance<'info> {
 
     pub fn rebalance_pay(&mut self, bump: &RebalanceBumps) -> Result<()> {
 
+        let (total_pool_usdc,  total_ktoken) = self.protocol.calculate_k_pool(&self.reserve)?;
+
+        let max_claimable = (self.protocol_ktoken_ata.amount as u128)
+            .checked_mul(total_pool_usdc)
+            .and_then(|x| x.checked_div(total_ktoken))
+            .ok_or(ProgramError::ArithmeticOverflow)?
+            as u64;
+
+
         let required_usdc = self.protocol.update_protocol();
 
-        if required_usdc == 0 {
-            msg!("Warning: Protocol is already balanced.");
-            return Ok(()); 
-        }
+        let required_usdc = required_usdc.min(max_claimable);
 
         let platform_tax: u64 = required_usdc
             .checked_mul(PLATFORM_TAX)
@@ -110,10 +123,8 @@ impl <'info>Rebalance<'info> {
             .ok_or(ProgramError::ArithmeticOverflow)?;
 
 
-        let (total_pool_usdc,  total_ktoken) = self.protocol.calculate_k_pool(&self.reserve)?;
-        
-        if (total_pool_usdc as u64) < total_ddt {
-            msg!("Warning: Lending pool illiquid. Extraction deferred.");
+        if required_usdc == 0 || required_usdc < total_ddt {
+            msg!("Warning: Insufficient yield. Extraction deferred.");
             return Ok(()); 
         }
 
@@ -123,6 +134,8 @@ impl <'info>Rebalance<'info> {
             .ok_or(ProgramError::ArithmeticOverflow)?
             as u64;
 
+        let ktoken_to_burn = ktoken_to_burn.min(self.protocol_ktoken_ata.amount);
+
         let binding = self.protocol.to_account_info().key();
         let signer_seeds: &[&[&[u8]]] = &[&[
             b"authority",
@@ -130,7 +143,6 @@ impl <'info>Rebalance<'info> {
             &[bump.protocol_authority],
         ]];
 
-        // Execute CPI to Kamino to withdraw `required_usdc`
         let usdc_recieved = self.k_withdrawal(ktoken_to_burn, signer_seeds)?;
         
         if usdc_recieved < total_ddt {
@@ -200,7 +212,6 @@ impl <'info>Rebalance<'info> {
             AccountMeta::new(self.reserve_liquidity_supply.key(), false),
             AccountMeta::new(self.protocol_ktoken_ata.key(), false),
             AccountMeta::new(self.protocol_ata.key(), false),
-            AccountMeta::new(self.token_program.key(), false),
             AccountMeta::new_readonly(self.token_program.key(), false),
             AccountMeta::new_readonly(self.token_program.key(), false),
             AccountMeta::new_readonly(self.instruction_sysvar.key(), false),
@@ -225,6 +236,7 @@ impl <'info>Rebalance<'info> {
                 self.reserve_liquidity_supply.to_account_info(),
                 self.protocol_ktoken_ata.to_account_info(),
                 self.protocol_ata.to_account_info(),
+                self.token_program.to_account_info(),
                 self.token_program.to_account_info(),
                 self.instruction_sysvar.to_account_info(),
             ],

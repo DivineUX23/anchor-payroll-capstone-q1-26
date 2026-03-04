@@ -22,7 +22,7 @@ pub mod anchor_payroll_capstone_q1_26 {
         ctx.accounts.transfer(deposit)
     }
 
-    pub fn cfo_withdraw(ctx: Context<CFOWithdraw>, amount: u64) -> Result<()> {
+    pub fn withdraw(ctx: Context<CFOWithdraw>, amount: u64) -> Result<()> {
         ctx.accounts.withdraw(amount, &ctx.bumps)
     }
 
