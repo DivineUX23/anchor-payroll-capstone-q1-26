@@ -50,9 +50,7 @@ describe("anchor-payroll-capstone-q1-26", () => {
 
     const LENDING_MARKET_OFFSET = 32;
     const USDC_OFFSET = 128;
-    const LIQUIDITY_SUPPLY_VAULT_OFFSET = 160; // mint_pubkey(32) after offset 128
-    // For collateral.mint_pubkey, we need the full ReserveLiquidity size + reserve_liquidity_padding
-
+    const LIQ_SUPPLY_VAULT_OFFSET = 160;
 
     const accounts = await mainnetCon.getProgramAccounts(KAMINO_PROGRAM_ID, {
       filters: [
@@ -69,7 +67,7 @@ describe("anchor-payroll-capstone-q1-26", () => {
       [Buffer.from("lma"), LENDING_MARKET.toBuffer()],
       KAMINO_PROGRAM_ID
     )[0];
-    RESERVE_LIQUIDITY_SUPPLY = new PublicKey(reserveAccount.account.data.subarray(LIQUIDITY_SUPPLY_VAULT_OFFSET, LIQUIDITY_SUPPLY_VAULT_OFFSET + 32));
+    RESERVE_LIQUIDITY_SUPPLY = new PublicKey(reserveAccount.account.data.subarray(LIQ_SUPPLY_VAULT_OFFSET, LIQ_SUPPLY_VAULT_OFFSET + 32));
 
     const COLLATERAL_MINT_OFFSET = 128 + 1232 + 1200;
     RESERVE_COLLATERAL_MINT = new PublicKey(reserveAccount.account.data.subarray(COLLATERAL_MINT_OFFSET, COLLATERAL_MINT_OFFSET + 32));
@@ -130,7 +128,7 @@ describe("anchor-payroll-capstone-q1-26", () => {
 
 
     const usdcInfo = await connection.getAccountInfo(USDC);
-    let usdcData = usdcInfo!.data;
+    let usdcData = usdcInfo.data;
 
     usdcData.writeUInt32LE(1, 0);
     operator.publicKey.toBuffer().copy(usdcData, 4);
@@ -144,11 +142,17 @@ describe("anchor-payroll-capstone-q1-26", () => {
         method: "surfnet_setAccount",
         params: [
           USDC.toBase58(),
-          { lamports: usdcInfo!.lamports, data: usdcData.toString("hex"), owner: usdcInfo!.owner.toBase58(), executable: false, rentEpoch: 0 }
+          { 
+            lamports: usdcInfo.lamports, 
+            data: usdcData.toString("hex"), 
+            owner: usdcInfo.owner.toBase58(), 
+            executable: false, 
+            rentEpoch: 0 
+          }
         ]
       })
     });
-    const hijackResult = await hijackResp.json();
+    await hijackResp.json();
 
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
@@ -182,8 +186,7 @@ describe("anchor-payroll-capstone-q1-26", () => {
         ]
       })
     })
-
-    const reserveHijackResult = await reserveHijackResp.json();
+    await reserveHijackResp.json();
 
   });
 

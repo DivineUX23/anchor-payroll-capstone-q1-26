@@ -1,8 +1,6 @@
 use anchor_lang::prelude::*;
 use crate::state::{LastUpdate, ReserveLiquidity, ReserveCollateral, ReserveConfig};
 
-// Ensure you have #[account] or #[derive( Clone, Debug)] 
-// depending on whether this is a root account or a nested struct in your Anchor program.
 //static_assertions::const_assert_eq!(RESERVE_SIZE, std::mem::size_of::<Reserve>());
 //static_assertions::const_assert_eq!(0, std::mem::size_of::<Reserve>() % 8);
 #[derive(PartialEq)]//, Derivative)]
