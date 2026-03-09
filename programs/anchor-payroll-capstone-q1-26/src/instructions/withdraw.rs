@@ -6,7 +6,7 @@ use anchor_lang::solana_program::{
 use anchor_lang::solana_program::sysvar::instructions::ID as INSTRUCTIONS_ID;
 use anchor_spl::{associated_token::AssociatedToken, token_interface::{Mint, TokenAccount, TokenInterface, TransferChecked, transfer_checked}};
 
-use crate::state::{ProtocolVault};
+use crate::state::{ProtocolVault, Reserve};
 use crate::utils::{get_sighash, KAMINO_PROGRAM_ID, USDC_MINT};
 
 
@@ -61,8 +61,13 @@ pub struct CFOWithdraw<'info> {
     #[account(address = KAMINO_PROGRAM_ID)]
     pub kamino_program: AccountInfo<'info>,
     /// CHECK:
-    #[account(mut)]
-    pub reserve: AccountInfo<'info>,
+    #[account(
+        mut, 
+        owner = kamino_program.key()
+    )]
+    //pub reserve: AccountInfo<'info>,
+    pub reserve: AccountLoader<'info, Reserve>,
+
     /// CHECK:
     pub lending_market: AccountInfo<'info>,
     /// CHECK:
@@ -124,7 +129,7 @@ impl <'info>CFOWithdraw<'info> {
                 .ok_or(ProgramError::ArithmeticOverflow)?;
 
         }
-        let _ = self.debit_safety(amount, signer_seeds);
+        let _ = self.debit_safety(amount, signer_seeds)?;
 
         self.protocol.safety_amount = self.protocol.safety_amount
             .checked_sub(amount)
@@ -162,7 +167,7 @@ impl <'info>CFOWithdraw<'info> {
             return Ok(0);
         }
 
-        let _ = self.protocol.update_liability();
+        let _ = self.protocol.update_liability()?;
         let balance_before = self.protocol_ata.amount;
 
         let mut data = get_sighash("redeem_reserve_collateral").to_vec();

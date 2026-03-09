@@ -5,8 +5,8 @@ use crate::state::{LastUpdate, ReserveLiquidity, ReserveCollateral, ReserveConfi
 //static_assertions::const_assert_eq!(0, std::mem::size_of::<Reserve>() % 8);
 #[derive(PartialEq)]//, Derivative)]
 //#[derivative(Debug)]
-//#[account(zero_copy)]
-#[zero_copy]
+#[account(zero_copy)]
+//#[zero_copy]
 #[repr(C)]
 pub struct Reserve {
     pub version: u64,

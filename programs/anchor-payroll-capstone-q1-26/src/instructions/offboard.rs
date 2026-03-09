@@ -59,7 +59,7 @@ impl <'info>StaffOffboard<'info> {
 
     pub fn claim_and_close(&mut self, bump: &StaffOffboardBumps) -> Result<()> {
 
-        let _ = self.protocol.update_liability();
+        let _ = self.protocol.update_liability()?;
 
         let current_time = Clock::get().unwrap().unix_timestamp as u64;
 
@@ -88,7 +88,7 @@ impl <'info>StaffOffboard<'info> {
             ]];
 
 
-            let _ = self.debit_safety(claimable_salary, signer_seeds);
+            let _ = self.debit_safety(claimable_salary, signer_seeds)?;
 
             self.protocol.safety_amount = self.protocol.safety_amount
                 .checked_sub(claimable_salary)

@@ -39,7 +39,8 @@ impl ProtocolVault {
 
     
 
-    pub fn calculate_k_pool(&self, k_info: &AccountInfo) -> Result<(u128, u128)> {
+    pub fn calculate_k_pool(&self, k_info: &AccountLoader<Reserve>) -> Result<(u128, u128)> {
+        /*
         let reserve_data = k_info.try_borrow_data()
             .map_err(|_| ProgramError::InvalidAccountData)?;
 
@@ -50,6 +51,9 @@ impl ProtocolVault {
 
         let k_reserve: &Reserve = bytemuck::try_from_bytes(&reserve_data[8..8 + reserve_size])
             .map_err(|_| ProgramError::InvalidAccountData)?;
+        */
+
+        let k_reserve = k_info.load()?;
 
         let wad: u128 = 1u128 << 64;
 
@@ -74,14 +78,13 @@ impl ProtocolVault {
         msg!("calculate_k_pool - available: {}, borrowed_sf: {}, fees_sf: {}", k_reserve.liquidity.available_amount, borrowed_sf, fees_sf);
         msg!("calculate_k_pool - total_pool_usdc: {}, total_ktoken: {}", total_pool_usdc, total_ktoken);
 
-        drop(reserve_data);
         
         Ok((total_pool_usdc, total_ktoken))
     }
 
 
 
-    pub fn calculate_total_assets(&self, k_info: &AccountInfo) -> Result<u64> {
+    pub fn calculate_total_assets(&self, k_info: &AccountLoader<Reserve>) -> Result<u64> {
 
         let (total_pool_usdc,  total_ktoken) = self.calculate_k_pool(k_info)?;
 

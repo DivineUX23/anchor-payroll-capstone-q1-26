@@ -387,6 +387,7 @@ describe("anchor-payroll-capstone-q1-26", () => {
 
     const oldProtocolInfo = await program.account.protocolVault.fetch(protocol);
     const olderSafetyAmount = oldProtocolInfo.safetyAmount;
+    const olderYieldAmount = oldProtocolInfo.yieldAmount;
     const olderLiability = oldProtocolInfo.liability;
 
     await program.methods
@@ -399,9 +400,20 @@ describe("anchor-payroll-capstone-q1-26", () => {
         protocol: protocol,
         protocolAuthority: protocolAuthority,
         protocolAta: protocolAta,
+        
+        protocolKtokenAta: protocolKtokenAta,
+        kaminoProgram: KAMINO_PROGRAM_ID,
+        reserve: RESERVE,
+        lendingMarket: LENDING_MARKET,
+        lendingMarketAuthority: LENDING_MARKET_AUTHORITY,
+        reserveLiquidityMint: USDC,
+        reserveLiquiditySupply: RESERVE_LIQUIDITY_SUPPLY,
+        reserveCollateralMint: RESERVE_COLLATERAL_MINT,
+
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        systemProgram: anchor.web3.SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
-        systemProgram: anchor.web3.SystemProgram.programId
+        instructionSysvar: SYSVAR_INSTRUCTIONS_PUBKEY
       })
       .signers([staff])
       .rpc();
@@ -413,6 +425,7 @@ describe("anchor-payroll-capstone-q1-26", () => {
 
     const protocolInfo = await program.account.protocolVault.fetch(protocol);
     expect(Number(protocolInfo.safetyAmount)).to.lessThanOrEqual(Number(olderSafetyAmount));
+    expect(Number(protocolInfo.yieldAmount)).to.lessThanOrEqual(Number(olderYieldAmount));
     expect(Number(protocolInfo.liability)).to.lessThanOrEqual(Number(olderLiability));
 
 

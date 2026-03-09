@@ -6,7 +6,7 @@ use anchor_lang::solana_program::{
 use anchor_lang::solana_program::sysvar::instructions::ID as INSTRUCTIONS_ID;
 use anchor_spl::{associated_token::AssociatedToken, token_interface::{Mint, TokenAccount, TokenInterface, TransferChecked, transfer_checked}};
 
-use crate::state::{ProtocolVault};
+use crate::state::{ProtocolVault, Reserve};
 use crate::utils::{get_sighash, KAMINO_PROGRAM_ID, USDC_MINT, BOUNTY_AMOUNT, PLATFORM_TAX};
 
 #[derive(Accounts)]
@@ -70,8 +70,12 @@ pub struct Rebalance<'info> {
     #[account(address = KAMINO_PROGRAM_ID)]
     pub kamino_program: AccountInfo<'info>,
     /// CHECK:
-    #[account(mut)]
-    pub reserve: AccountInfo<'info>,
+    #[account(
+        mut, 
+        owner = kamino_program.key()
+    )]
+    //pub reserve: AccountInfo<'info>,
+    pub reserve: AccountLoader<'info, Reserve>,
     /// CHECK:
     pub lending_market: AccountInfo<'info>,
     /// CHECK:
@@ -196,7 +200,7 @@ impl <'info>Rebalance<'info> {
             return Err(ProgramError::InvalidArgument.into());
         }
 
-        let _ = self.protocol.update_liability();
+        let _ = self.protocol.update_liability()?;
         let balance_before = self.protocol_ata.amount;
 
         let mut data = get_sighash("redeem_reserve_collateral").to_vec();
