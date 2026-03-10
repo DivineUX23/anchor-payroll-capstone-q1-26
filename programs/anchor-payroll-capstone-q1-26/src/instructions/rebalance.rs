@@ -6,7 +6,7 @@ use anchor_lang::solana_program::{
 use anchor_lang::solana_program::sysvar::instructions::ID as INSTRUCTIONS_ID;
 use anchor_spl::{associated_token::AssociatedToken, token_interface::{Mint, TokenAccount, TokenInterface, TransferChecked, transfer_checked}};
 
-use crate::state::{ProtocolVault, Reserve};
+use crate::state::{ProtocolVault};
 use crate::utils::{get_sighash, KAMINO_PROGRAM_ID, USDC_MINT, BOUNTY_AMOUNT, PLATFORM_TAX};
 
 #[derive(Accounts)]
@@ -70,14 +70,13 @@ pub struct Rebalance<'info> {
     #[account(address = KAMINO_PROGRAM_ID)]
     pub kamino_program: AccountInfo<'info>,
     /// CHECK:
-    #[account(
-        mut, 
-        owner = kamino_program.key()
-    )]
-    //pub reserve: AccountInfo<'info>,
-    pub reserve: AccountLoader<'info, Reserve>,
+    #[account(mut)]
+    pub reserve: AccountInfo<'info>,
+    //pub reserve: AccountLoader<'info, Reserve>,
+
     /// CHECK:
     pub lending_market: AccountInfo<'info>,
+
     /// CHECK:
     pub lending_market_authority: AccountInfo<'info>,
 
@@ -131,7 +130,7 @@ impl <'info>Rebalance<'info> {
             msg!("Warning: Insufficient yield. Extraction deferred.");
             return Ok(()); 
         }
-
+        /*
         let ktoken_to_burn = (required_usdc as u128)
             .checked_mul(total_ktoken)
             .and_then(|x| x.checked_div(total_pool_usdc))
@@ -139,6 +138,8 @@ impl <'info>Rebalance<'info> {
             as u64;
 
         let ktoken_to_burn = ktoken_to_burn.min(self.protocol_ktoken_ata.amount);
+        */
+        let ktoken_to_burn = self.protocol.ktoken_to_burn(required_usdc, self.protocol_ktoken_ata.amount, &self.reserve)?;
 
         let binding = self.protocol.to_account_info().key();
         let signer_seeds: &[&[&[u8]]] = &[&[

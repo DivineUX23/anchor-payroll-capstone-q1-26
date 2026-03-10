@@ -33,7 +33,7 @@ impl <'info>OperatorInit<'info> {
             yield_amount: 0,
             global_rate: 0,
             liability: 0,
-            liability_timestamp: Clock::get().unwrap().unix_timestamp as u64,
+            liability_timestamp: Clock::get()?.unix_timestamp as u64,
         });
         Ok(())
     }

@@ -15,7 +15,7 @@ pub struct ProtocolVault {
 
 impl ProtocolVault {
     pub fn update_liability(&mut self) -> Result<()> {
-        let current_time = Clock::get().unwrap().unix_timestamp;
+        let current_time = Clock::get()?.unix_timestamp;
         let time_delta = current_time as u64 - self.liability_timestamp;
 
         self.liability += self.global_rate * time_delta;
@@ -39,8 +39,8 @@ impl ProtocolVault {
 
     
 
-    pub fn calculate_k_pool(&self, k_info: &AccountLoader<Reserve>) -> Result<(u128, u128)> {
-        /*
+    pub fn calculate_k_pool(&self, k_info: &AccountInfo) -> Result<(u128, u128)> {
+        
         let reserve_data = k_info.try_borrow_data()
             .map_err(|_| ProgramError::InvalidAccountData)?;
 
@@ -51,9 +51,8 @@ impl ProtocolVault {
 
         let k_reserve: &Reserve = bytemuck::try_from_bytes(&reserve_data[8..8 + reserve_size])
             .map_err(|_| ProgramError::InvalidAccountData)?;
-        */
 
-        let k_reserve = k_info.load()?;
+        //let k_reserve = k_info.load()?;
 
         let wad: u128 = 1u128 << 64;
 
@@ -74,17 +73,13 @@ impl ProtocolVault {
             / wad;
 
         let total_ktoken: u128 = k_reserve.collateral.mint_total_supply as u128;
-
-        msg!("calculate_k_pool - available: {}, borrowed_sf: {}, fees_sf: {}", k_reserve.liquidity.available_amount, borrowed_sf, fees_sf);
-        msg!("calculate_k_pool - total_pool_usdc: {}, total_ktoken: {}", total_pool_usdc, total_ktoken);
-
         
         Ok((total_pool_usdc, total_ktoken))
     }
 
 
 
-    pub fn calculate_total_assets(&self, k_info: &AccountLoader<Reserve>) -> Result<u64> {
+    pub fn calculate_total_assets(&self, k_info: &AccountInfo) -> Result<u64> {
 
         let (total_pool_usdc,  total_ktoken) = self.calculate_k_pool(k_info)?;
 
@@ -104,7 +99,7 @@ impl ProtocolVault {
             .checked_add(cfo_usdc as u64)
             .ok_or(ProgramError::ArithmeticOverflow)?;
 
-        let current_time = Clock::get().unwrap().unix_timestamp;
+        let current_time = Clock::get()?.unix_timestamp;
 
         let time_delta = current_time.saturating_sub(self.liability_timestamp as i64);
         let new_liability = self.global_rate
@@ -116,6 +111,46 @@ impl ProtocolVault {
             .ok_or(ProgramError::ArithmeticOverflow)?;
 
         Ok(total_assets.saturating_sub(current_liability))
+
+    }
+
+
+    pub fn ktoken_to_burn(&self, debit_pool: u64, p_k_amount: u64, reserve: &AccountInfo) -> Result<u64> {
+        
+        let (total_pool_usdc,  total_ktoken) = self.calculate_k_pool(reserve)?;
+
+        let ktoken_to_burn = {
+
+            let numertor = (debit_pool as u128)
+                .checked_mul(total_ktoken)
+                .ok_or(ProgramError::ArithmeticOverflow)?;     
+
+            let ktoken_to_burn = numertor
+                .checked_add(total_pool_usdc)
+                .and_then(|x| x.checked_sub(1))
+                .and_then(|x| x.checked_div(total_pool_usdc))
+                .ok_or(ProgramError::ArithmeticOverflow)?
+                as u64;
+
+            const LIQ_OFFSET: usize = 224;
+            let reserve_data = reserve.try_borrow_data()?;
+            let mut reserve_byte = [0u8; 8];
+            reserve_byte.copy_from_slice(&reserve_data[LIQ_OFFSET..LIQ_OFFSET + 8]);
+            let max_liq = u64::from_le_bytes(reserve_byte);
+
+
+            let max_liq_k = (max_liq as u128)
+                .checked_mul(total_ktoken)
+                .and_then(|x| x.checked_div(total_pool_usdc))
+                .ok_or(ProgramError::ArithmeticOverflow)?
+                as u64;
+
+            ktoken_to_burn
+                .min(p_k_amount)
+                .min(max_liq_k)
+        };
+
+        Ok(ktoken_to_burn)
 
     }
 

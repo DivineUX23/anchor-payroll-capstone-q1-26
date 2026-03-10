@@ -6,7 +6,7 @@ use anchor_lang::solana_program::{
 use anchor_lang::solana_program::sysvar::instructions::ID as INSTRUCTIONS_ID;
 use anchor_spl::{associated_token::AssociatedToken, token_interface::{Mint, TokenAccount, TokenInterface, TransferChecked, transfer_checked}};
 
-use crate::state::{ProtocolVault, Reserve};
+use crate::state::{ProtocolVault};
 use crate::utils::{get_sighash, KAMINO_PROGRAM_ID, USDC_MINT};
 
 
@@ -61,12 +61,9 @@ pub struct CFOWithdraw<'info> {
     #[account(address = KAMINO_PROGRAM_ID)]
     pub kamino_program: AccountInfo<'info>,
     /// CHECK:
-    #[account(
-        mut, 
-        owner = kamino_program.key()
-    )]
-    //pub reserve: AccountInfo<'info>,
-    pub reserve: AccountLoader<'info, Reserve>,
+    #[account(mut)]
+    pub reserve: AccountInfo<'info>,
+    //pub reserve: AccountLoader<'info, Reserve>,
 
     /// CHECK:
     pub lending_market: AccountInfo<'info>,
@@ -111,7 +108,7 @@ impl <'info>CFOWithdraw<'info> {
 
             let debit_pool = amount.checked_sub(self.protocol.safety_amount)
                 .ok_or(ProgramError::ArithmeticOverflow)?;
-
+            /*
             let (total_pool_usdc,  total_ktoken) = self.protocol.calculate_k_pool(&self.reserve)?;
 
             let ktoken_to_burn = (debit_pool as u128)
@@ -121,6 +118,9 @@ impl <'info>CFOWithdraw<'info> {
                 as u64;
 
             let ktoken_to_burn = ktoken_to_burn.min(self.protocol_ktoken_ata.amount);
+            */
+
+            let ktoken_to_burn = self.protocol.ktoken_to_burn(debit_pool, self.protocol_ktoken_ata.amount, &self.reserve)?;
 
             let usdc_received = self.k_withdrawal(ktoken_to_burn, signer_seeds)?;
             

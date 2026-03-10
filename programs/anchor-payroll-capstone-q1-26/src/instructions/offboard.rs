@@ -58,20 +58,14 @@ pub struct StaffOffboard<'info> {
 impl <'info>StaffOffboard<'info> {
 
     pub fn claim_and_close(&mut self, bump: &StaffOffboardBumps) -> Result<()> {
+        let current_time = Clock::get()?.unix_timestamp as u64;
 
-        let _ = self.protocol.update_liability()?;
+        self.staff_account.active = false;
+        self.staff_account.time_ended = current_time;
 
-        let current_time = Clock::get().unwrap().unix_timestamp as u64;
+        self.protocol.update_liability()?;
 
-        let time_passed = current_time
-            .checked_sub(self.staff_account.time_started)
-            .ok_or(ProgramError::ArithmeticOverflow)?;
-
-        let claimable_salary = self.staff_account.rate
-            .checked_mul(time_passed)
-            .and_then(|x| x.checked_sub(self.staff_account.total_claimed))
-            .ok_or(ProgramError::ArithmeticOverflow)?;
-
+        let claimable_salary = self.staff_account.claimable_salary()?;
 
         if claimable_salary > 0 {
 

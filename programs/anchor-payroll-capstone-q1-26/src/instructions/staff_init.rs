@@ -41,7 +41,8 @@ impl <'info>StaffInit<'info> {
             active: true,
             rate: rate_sec,
             total_claimed: 0,
-            time_started: Clock::get().unwrap().unix_timestamp as u64,
+            time_started: Clock::get()?.unix_timestamp as u64,
+            time_ended: 0,
         });
 
         self.protocol.global_rate = self.protocol.global_rate

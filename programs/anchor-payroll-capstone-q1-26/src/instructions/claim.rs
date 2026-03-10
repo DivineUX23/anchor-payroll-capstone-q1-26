@@ -5,7 +5,7 @@ use anchor_lang::solana_program::{
     program::invoke_signed
 };
 use anchor_spl::{associated_token::AssociatedToken, token_interface::{Mint, TokenAccount, TokenInterface, TransferChecked, transfer_checked}};
-use crate::{Reserve, StaffAccount};
+use crate::{StaffAccount};
 use crate::state::{ProtocolVault};
 use crate::utils::{get_sighash, KAMINO_PROGRAM_ID, USDC_MINT};
 const MINIMUM_CLAIM: u64 = 1_000_000;
@@ -64,19 +64,21 @@ pub struct StaffClaim<'info> {
     /// CHECK:
     #[account(address = KAMINO_PROGRAM_ID)]
     pub kamino_program: AccountInfo<'info>,
+
     /// CHECK: 
-    #[account(
-        mut, 
-        owner = kamino_program.key()
-    )]
-    pub reserve: AccountLoader<'info, Reserve>,
+    #[account(mut)]
+    pub reserve: AccountInfo<'info>,
+    //pub reserve: AccountLoader<'info, Reserve>,
+
     /// CHECK:
     pub lending_market: AccountInfo<'info>,
+
     /// CHECK:
     pub lending_market_authority: AccountInfo<'info>,
 
     #[account(address = USDC_MINT)]
     pub reserve_liquidity_mint: InterfaceAccount<'info, Mint>,
+
     /// CHECK:
     #[account(mut)]
     pub reserve_liquidity_supply: AccountInfo<'info>,
@@ -125,33 +127,7 @@ impl <'info>StaffClaim<'info> {
             let debit_pool = claimable_salary.checked_sub(self.protocol.safety_amount)
                 .ok_or(ProgramError::ArithmeticOverflow)?;
 
-            let (total_pool_usdc,  total_ktoken) = self.protocol.calculate_k_pool(&self.reserve)?;
-
-
-            let ktoken_to_burn = {
-                let base_ktoken = (debit_pool as u128)
-                    .checked_mul(total_ktoken)
-                    .and_then(|x| x.checked_div(total_pool_usdc))
-                    .ok_or(ProgramError::ArithmeticOverflow)?
-                    as u64;
-
-                let ktoken_to_burn = base_ktoken.checked_mul(101)
-                    .and_then(|x| x.checked_div(100))
-                    .ok_or(ProgramError::ArithmeticOverflow)?;     
-
-                let reserve_data = self.reserve.load()?;
-                let max_liq = reserve_data.liquidity.available_amount;
-
-                let max_liq_k = (max_liq as u128)
-                    .checked_mul(total_ktoken)
-                    .and_then(|x| x.checked_div(total_pool_usdc))
-                    .ok_or(ProgramError::ArithmeticOverflow)?
-                    as u64;
-
-                ktoken_to_burn
-                    .min(self.protocol_ktoken_ata.amount)
-                    .min(max_liq_k)
-            };
+            let ktoken_to_burn = self.protocol.ktoken_to_burn(debit_pool, self.protocol_ktoken_ata.amount, &self.reserve)?;
 
             usdc_received = self.k_withdrawal(ktoken_to_burn, signer_seeds)?;
             

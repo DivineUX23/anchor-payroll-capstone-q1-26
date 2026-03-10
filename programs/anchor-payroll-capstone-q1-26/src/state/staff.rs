@@ -6,11 +6,17 @@ pub struct StaffAccount {
     pub active: bool,
     pub rate: u64,
     pub total_claimed: u64,
-    pub time_started: u64
+    pub time_started: u64,
+    pub time_ended: u64
 }
 impl StaffAccount {
     pub fn claimable_salary(&mut self) -> Result<u64> {
-        let current_time = Clock::get().unwrap().unix_timestamp as u64;
+
+        let current_time = if !self.active && self.time_ended != 0 {
+            self.time_ended
+        } else {
+            Clock::get()?.unix_timestamp as u64
+        };
 
         let time_passed = current_time
             .checked_sub(self.time_started)
