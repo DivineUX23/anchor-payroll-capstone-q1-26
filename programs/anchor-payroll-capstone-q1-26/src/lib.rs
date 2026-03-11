@@ -42,6 +42,9 @@ pub mod anchor_payroll_capstone_q1_26 {
         ctx.accounts.claim_and_close(&ctx.bumps)
     }
 
+    pub fn collect_staff(ctx: Context<CollectStaff>) -> Result<()> {
+        ctx.accounts.collect_close()
+    }
 
 }
 

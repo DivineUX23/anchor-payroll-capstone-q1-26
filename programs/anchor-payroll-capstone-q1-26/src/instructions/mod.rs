@@ -18,3 +18,6 @@ pub use claim::*;
 
 pub mod offboard;
 pub use offboard::*;
+
+pub mod collect_staff;
+pub use collect_staff::*;

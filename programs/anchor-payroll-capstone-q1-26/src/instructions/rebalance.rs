@@ -201,7 +201,7 @@ impl <'info>Rebalance<'info> {
             return Err(ProgramError::InvalidArgument.into());
         }
 
-        let _ = self.protocol.update_liability()?;
+        self.protocol.update_liability()?;
         let balance_before = self.protocol_ata.amount;
 
         let mut data = get_sighash("redeem_reserve_collateral").to_vec();

@@ -15,11 +15,23 @@ pub struct ProtocolVault {
 
 impl ProtocolVault {
     pub fn update_liability(&mut self) -> Result<()> {
-        let current_time = Clock::get()?.unix_timestamp;
-        let time_delta = current_time as u64 - self.liability_timestamp;
+        let current_time = Clock::get()?.unix_timestamp as u64;
+        //let time_delta = current_time as u64 - self.liability_timestamp;
+        let time_delta = current_time
+            .saturating_sub(self.liability_timestamp);
 
-        self.liability += self.global_rate * time_delta;
-        self.liability_timestamp = current_time as u64;
+        if time_delta > 0 {
+            let total_amount = self.global_rate
+                .checked_mul(time_delta)
+                .ok_or(ProgramError::ArithmeticOverflow)?;
+
+            //self.liability += self.global_rate * time_delta;
+            self.liability = self.liability
+                .checked_add(total_amount)
+                .ok_or(ProgramError::ArithmeticOverflow)?;
+
+            self.liability_timestamp = current_time;
+        }
 
         Ok(())
     }
@@ -30,7 +42,9 @@ impl ProtocolVault {
         let vault_target = (daily_burn_rate * 2 * 12) / 10;
 
         if self.safety_amount < vault_target {
-            let to_safety = vault_target - self.safety_amount;
+            //let to_safety = vault_target - self.safety_amount;
+            let to_safety = vault_target
+                .saturating_sub(self.safety_amount);
             to_safety
         } else {
             0

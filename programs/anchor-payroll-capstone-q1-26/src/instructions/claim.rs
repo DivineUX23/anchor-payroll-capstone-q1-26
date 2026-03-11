@@ -30,7 +30,7 @@ pub struct StaffClaim<'info> {
 
     #[account(
         mut,
-        constraint = staff_account.active == true @ ProgramError::InvalidAccountData
+        //constraint = staff_account.active == true @ ProgramError::InvalidAccountData
     )]
     pub staff_account: Account<'info, StaffAccount>,
 
@@ -51,7 +51,6 @@ pub struct StaffClaim<'info> {
         associated_token::token_program = token_program
     )]
     pub protocol_ata: InterfaceAccount<'info, TokenAccount>,
-
 
     #[account(
         mut,
@@ -138,7 +137,7 @@ impl <'info>StaffClaim<'info> {
             .ok_or(ProgramError::ArithmeticOverflow)?;
 
         if claimable_salary > total_liq {
-            msg!("Warning: Insufficient amount in pool. Max amount to be withdrawn.");
+            msg!("Warning: Insufficient amount in pool. Max amount Received.");
         }
         let claimable_salary = claimable_salary.min(total_liq);
 
@@ -147,8 +146,7 @@ impl <'info>StaffClaim<'info> {
             return Err(ProgramError::InsufficientFunds.into());
         }
 
-
-        self.protocol.safety_amount = self.protocol.safety_amount
+        self.protocol.safety_amount = total_liq
             .checked_sub(claimable_salary)
             .ok_or(ProgramError::ArithmeticOverflow)?;
 
@@ -193,7 +191,7 @@ impl <'info>StaffClaim<'info> {
             return Err(ProgramError::InvalidArgument.into());
         }
 
-        self.protocol.update_liability()?;
+        //self.protocol.update_liability()?;
         let balance_before = self.protocol_ata.amount;
 
         let mut data = get_sighash("redeem_reserve_collateral").to_vec();

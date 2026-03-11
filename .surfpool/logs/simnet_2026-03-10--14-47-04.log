@@ -5,3 +5,12 @@
 [2026-03-10--14-50-11 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:59970.
 [2026-03-10--14-50-21 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:33896.
 [2026-03-10--14-50-23 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:33906.
+[2026-03-10--23-43-23 INFO actix_web::middleware::logger] 127.0.0.1 "GET /config HTTP/1.1" 200 167 "http://127.0.0.1:18488/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0" 0.039910
+[2026-03-10--23-43-25 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:56290.
+[2026-03-10--23-43-25 INFO actix_web::middleware::logger] 127.0.0.1 "GET /config HTTP/1.1" 200 167 "http://127.0.0.1:18488/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0" 0.000663
+[2026-03-11--02-00-55 INFO actix_server::accept] accept thread stopped
+[2026-03-11--02-00-55 INFO actix_server::worker] shutting down idle worker
+[2026-03-11--02-00-55 INFO actix_server::worker] shutting down idle worker
+[2026-03-11--02-00-55 INFO actix_server::worker] shutting down idle worker
+[2026-03-11--02-00-55 INFO actix_server::worker] shutting down idle worker
+[2026-03-11--02-00-55 INFO actix_server::worker] shutting down idle worker

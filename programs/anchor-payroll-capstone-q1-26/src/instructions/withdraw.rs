@@ -129,7 +129,7 @@ impl <'info>CFOWithdraw<'info> {
                 .ok_or(ProgramError::ArithmeticOverflow)?;
 
         }
-        let _ = self.debit_safety(amount, signer_seeds)?;
+        self.debit_safety(amount, signer_seeds)?;
 
         self.protocol.safety_amount = self.protocol.safety_amount
             .checked_sub(amount)
@@ -167,7 +167,7 @@ impl <'info>CFOWithdraw<'info> {
             return Ok(0);
         }
 
-        let _ = self.protocol.update_liability()?;
+        self.protocol.update_liability()?;
         let balance_before = self.protocol_ata.amount;
 
         let mut data = get_sighash("redeem_reserve_collateral").to_vec();

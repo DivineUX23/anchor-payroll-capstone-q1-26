@@ -379,6 +379,8 @@ describe("anchor-payroll-capstone-q1-26", () => {
   it("Staff claim is complete!", async () => {
     // Add your test here.
 
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
     const oldstaffAccountInfo = await program.account.staffAccount.fetch(staffAccount);
     const oldertotalClaimed = oldstaffAccountInfo.totalClaimed;
 
@@ -455,9 +457,20 @@ describe("anchor-payroll-capstone-q1-26", () => {
         protocol: protocol,
         protocolAuthority: protocolAuthority,
         protocolAta: protocolAta,
+
+        protocolKtokenAta: protocolKtokenAta,
+        kaminoProgram: KAMINO_PROGRAM_ID,
+        reserve: RESERVE,
+        lendingMarket: LENDING_MARKET,
+        lendingMarketAuthority: LENDING_MARKET_AUTHORITY,
+        reserveLiquidityMint: USDC,
+        reserveLiquiditySupply: RESERVE_LIQUIDITY_SUPPLY,
+        reserveCollateralMint: RESERVE_COLLATERAL_MINT,
+
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        systemProgram: anchor.web3.SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
-        systemProgram: anchor.web3.SystemProgram.programId
+        instructionSysvar: SYSVAR_INSTRUCTIONS_PUBKEY
       })
       .rpc();
 
@@ -468,6 +481,31 @@ describe("anchor-payroll-capstone-q1-26", () => {
     expect(Number(protocolInfo.safetyAmount)).to.lessThanOrEqual(Number(olderSafetyAmount));
     expect(Number(protocolInfo.liability)).to.lessThanOrEqual(Number(olderLiability));
     expect(Number(protocolInfo.globalRate)).to.lessThan(Number(olderGlobalRate));
+
+    const StaffAccountInfo = await program.account.staffAccount.fetch(staffAccount);
+    expect(StaffAccountInfo.active).to.equals(false);
+
+  });
+
+
+
+
+  it("Cleanup staff account is complete!", async () => {
+    // Add your test here.
+
+    const oldBalance = await provider.connection.getBalance(operator.publicKey);
+
+    await program.methods
+      .collectStaff()
+      .accountsStrict({
+        operator: operator.publicKey,
+        protocol: protocol,
+        staffAccount: staffAccount,
+      })
+      .rpc();
+
+    const NewBalance = await provider.connection.getBalance(operator.publicKey);
+    expect(NewBalance).to.greaterThan(oldBalance);
 
   });
 

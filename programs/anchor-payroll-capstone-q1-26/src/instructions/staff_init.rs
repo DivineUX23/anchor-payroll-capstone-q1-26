@@ -33,6 +33,8 @@ pub struct StaffInit<'info> {
 impl <'info>StaffInit<'info> {
     pub fn init(&mut self, annualized_salary: u64) -> Result<()> {
 
+        self.protocol.update_liability()?;
+
         let rate_sec = annualized_salary
             .checked_div(31_557_600 as u64)
             .ok_or(ProgramError::ArithmeticOverflow)?;
@@ -48,8 +50,6 @@ impl <'info>StaffInit<'info> {
         self.protocol.global_rate = self.protocol.global_rate
             .checked_add(rate_sec)
             .ok_or(ProgramError::ArithmeticOverflow)?;
-
-        self.protocol.update_liability()?;
 
         Ok(())
     }
