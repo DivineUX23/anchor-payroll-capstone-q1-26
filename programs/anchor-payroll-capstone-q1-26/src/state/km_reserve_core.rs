@@ -57,8 +57,8 @@ pub struct ReserveCollateral {
 
 #[derive(PartialEq, Eq, Default)] //Derivative
 //#[derivative(Debug)]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-#[cfg_attr(feature = "serde", serde(deny_unknown_fields))]
+//#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+//#[cfg_attr(feature = "serde", serde(deny_unknown_fields))]
 #[zero_copy]
 #[repr(C)]
 pub struct ReserveConfig {
@@ -67,10 +67,10 @@ pub struct ReserveConfig {
     pub host_fixed_interest_rate_bps: u16,
     pub min_deleveraging_bonus_bps: u16,
 
-    #[cfg_attr(feature = "serde", serde(with = "serde_bool_u8"))]
+    //#[cfg_attr(feature = "serde", serde(with = "serde_bool_u8"))]
     pub block_ctoken_usage: u8,
 
-    #[cfg_attr(feature = "serde", serde(skip_serializing, default))]
+    //#[cfg_attr(feature = "serde", serde(skip_serializing, default))]
     //#[derivative(Debug = "ignore")]
     pub reserved1: [u8; 6],
 
@@ -96,10 +96,10 @@ pub struct ReserveConfig {
     pub disable_usage_as_coll_outside_emode: u8,
     pub utilization_limit_block_borrowing_above_pct: u8,
 
-    #[cfg_attr(feature = "serde", serde(with = "serde_bool_u8"))]
+    //#[cfg_attr(feature = "serde", serde(with = "serde_bool_u8"))]
     pub autodeleverage_enabled: u8,
     
-    #[cfg_attr(feature = "serde", serde(with = "serde_bool_u8"))]
+    //#[cfg_attr(feature = "serde", serde(with = "serde_bool_u8"))]
     pub proposer_authority_locked: u8,
     
     pub borrow_limit_outside_elevation_group: u64,

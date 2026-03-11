@@ -7,33 +7,33 @@ pub const TOKEN_INFO_SIZE: usize = 384;
 //static_assertions::const_assert_eq!(TOKEN_INFO_SIZE, std::mem::size_of::<TokenInfo>());
 //static_assertions::const_assert_eq!(0, std::mem::size_of::<TokenInfo>() % 8);
 #[derive(PartialEq, Eq, Default)]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-#[cfg_attr(feature = "serde", serde(deny_unknown_fields))]
+//#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+//#[cfg_attr(feature = "serde", serde(deny_unknown_fields))]
 #[zero_copy]
 #[repr(C)]
 pub struct TokenInfo {
-    #[cfg_attr(feature = "serde", serde(with = "serde_name"))]
+    //#[cfg_attr(feature = "serde", serde(with = "serde_name"))]
     pub name: [u8; 32],
     pub heuristic: PriceHeuristic,
     pub max_twap_divergence_bps: u64,
     pub max_age_price_seconds: u64,
     pub max_age_twap_seconds: u64,
-    #[cfg_attr(feature = "serde", serde(default))]
+    //#[cfg_attr(feature = "serde", serde(default))]
     pub scope_configuration: ScopeConfiguration,
-    #[cfg_attr(feature = "serde", serde(default))]
+    //#[cfg_attr(feature = "serde", serde(default))]
     pub switchboard_configuration: SwitchboardConfiguration,
-    #[cfg_attr(feature = "serde", serde(default))]
+    //#[cfg_attr(feature = "serde", serde(default))]
     pub pyth_configuration: PythConfiguration,
     pub block_price_usage: u8,
-    #[cfg_attr(feature = "serde", serde(skip_serializing, default))]
+    //#[cfg_attr(feature = "serde", serde(skip_serializing, default))]
     pub reserved: [u8; 7],
-    #[cfg_attr(feature = "serde", serde(skip_serializing, default))]
+    //#[cfg_attr(feature = "serde", serde(skip_serializing, default))]
     pub padding: [u64; 19],
 }
 
 #[derive(Debug, Default, PartialEq, Eq)]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-#[cfg_attr(feature = "serde", serde(deny_unknown_fields))]
+//#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+//#[cfg_attr(feature = "serde", serde(deny_unknown_fields))]
 #[zero_copy]
 #[repr(C)]
 pub struct CurvePoint {
@@ -62,20 +62,20 @@ pub struct ReserveFees {
 
 
 #[derive(PartialEq, Eq, Default, Debug)]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+//#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 #[zero_copy]
 #[repr(C)]
 pub struct WithdrawalCaps {
     pub config_capacity: i64,
-    #[cfg_attr(
+    /*#[cfg_attr(
         all(feature = "serde", not(feature = "serialize_caps_interval_values")),
         serde(skip)
-    )]
+    )]*/
     pub current_total: i64,
-    #[cfg_attr(
+    /*#[cfg_attr(
         all(feature = "serde", not(feature = "serialize_caps_interval_values")),
         serde(skip)
-    )]
+    )]*/
     pub last_interval_start_timestamp: u64,
     pub config_interval_length_seconds: u64,
 }

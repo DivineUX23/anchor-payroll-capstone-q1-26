@@ -1,0 +1,55 @@
+[2026-03-11--17-26-25 INFO actix_server::builder] starting 5 workers
+[2026-03-11--17-26-25 INFO actix_server::server] Tokio runtime found; starting in existing Tokio runtime
+[2026-03-11--17-26-25 INFO actix_server::server] starting service: "actix-web-service-127.0.0.1:18488", workers: 5, listening on: 127.0.0.1:18488
+[2026-03-11--17-26-25 INFO parity_ws] Listening for new connections on 127.0.0.1:8900.
+[2026-03-11--17-27-21 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:41978.
+[2026-03-11--17-27-28 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:58400.
+[2026-03-11--17-27-30 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:58404.
+[2026-03-11--17-27-34 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:58414.
+[2026-03-11--17-27-37 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:58428.
+[2026-03-11--17-27-43 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:39868.
+[2026-03-11--17-27-45 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:39878.
+[2026-03-11--17-27-48 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:44298.
+[2026-03-11--17-28-06 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:52986.
+[2026-03-11--17-28-12 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:42068.
+[2026-03-11--17-28-14 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:42082.
+[2026-03-11--17-28-18 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:42092.
+[2026-03-11--17-28-28 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:35182.
+[2026-03-11--17-28-37 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:41820.
+[2026-03-11--17-28-39 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:41830.
+[2026-03-11--17-28-43 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:41840.
+[2026-03-11--17-28-54 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:38512.
+[2026-03-11--17-29-00 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:38522.
+[2026-03-11--17-29-02 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:38524.
+[2026-03-11--17-29-08 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:32916.
+[2026-03-11--17-29-18 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:42054.
+[2026-03-11--17-29-24 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:42058.
+[2026-03-11--17-29-26 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:35362.
+[2026-03-11--17-29-29 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:35368.
+[2026-03-11--17-29-45 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:44976.
+[2026-03-11--17-29-51 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:59812.
+[2026-03-11--17-29-54 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:59820.
+[2026-03-11--17-29-57 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:59824.
+[2026-03-11--17-33-36 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:40116.
+[2026-03-11--17-33-43 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:40124.
+[2026-03-11--17-33-45 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:40128.
+[2026-03-11--17-33-51 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:47854.
+[2026-03-11--17-34-28 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:53176.
+[2026-03-11--17-34-34 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:53004.
+[2026-03-11--17-34-36 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:53008.
+[2026-03-11--17-34-39 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:53014.
+[2026-03-11--17-35-05 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:59810.
+[2026-03-11--17-35-10 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:59818.
+[2026-03-11--17-35-12 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:59820.
+[2026-03-11--17-35-16 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:52478.
+[2026-03-11--17-43-01 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:49464.
+[2026-03-11--17-43-10 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:52730.
+[2026-03-11--17-43-12 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:52736.
+[2026-03-11--17-43-13 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:52750.
+[2026-03-11--17-43-15 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:52756.
+[2026-03-11--17-43-25 INFO actix_server::accept] accept thread stopped
+[2026-03-11--17-43-25 INFO actix_server::worker] shutting down idle worker
+[2026-03-11--17-43-25 INFO actix_server::worker] shutting down idle worker
+[2026-03-11--17-43-25 INFO actix_server::worker] shutting down idle worker
+[2026-03-11--17-43-25 INFO actix_server::worker] shutting down idle worker
+[2026-03-11--17-43-25 INFO actix_server::worker] shutting down idle worker

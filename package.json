@@ -8,6 +8,7 @@
     "@coral-xyz/anchor": "^0.32.1",
     "@kamino-finance/klend-sdk": "^7.3.20",
     "@solana/spl-token": "^0.4.14",
+    "@solana/web3.js-v2": "npm:@solana/web3.js@2",
     "decimal.js": "^10.6.0"
   },
   "devDependencies": {

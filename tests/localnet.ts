@@ -195,24 +195,32 @@ describe("anchor-payroll-capstone-q1-26", () => {
 
   it("Operator is initialized!", async () => {
     // Add your test here.
-
-    await program.methods
-      .operatorInit()
-      .accountsStrict({
-        operator: operator.publicKey,
-        protocol: protocol,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        systemProgram: anchor.web3.SystemProgram.programId
-      })
-      .rpc();
-    const protocolInfo = await program.account.protocolVault.fetch(protocol);
-    expect(protocolInfo.operator.toBase58()).to.equal(operator.publicKey.toBase58());
-    expect(Number(protocolInfo.safetyAmount)).to.equal(0);
-    expect(Number(protocolInfo.yieldAmount)).to.equal(0);
-    expect(Number(protocolInfo.globalRate)).to.equal(0);
-    expect(Number(protocolInfo.liability)).to.equal(0);
-    //expect(protocolInfo.liabilityTimestamp).to.greaterThan(0);
+    try {
+        await program.methods
+        .operatorInit()
+        .accountsStrict({
+            operator: operator.publicKey,
+            protocol: protocol,
+            associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+            tokenProgram: TOKEN_PROGRAM_ID,
+            systemProgram: anchor.web3.SystemProgram.programId
+        })
+        .rpc();
+        const protocolInfo = await program.account.protocolVault.fetch(protocol);
+        expect(protocolInfo.operator.toBase58()).to.equal(operator.publicKey.toBase58());
+        expect(Number(protocolInfo.safetyAmount)).to.equal(0);
+        expect(Number(protocolInfo.yieldAmount)).to.equal(0);
+        expect(Number(protocolInfo.globalRate)).to.equal(0);
+        expect(Number(protocolInfo.liability)).to.equal(0);
+        //expect(protocolInfo.liabilityTimestamp).to.greaterThan(0);
+    } catch (error) {
+        const errstring = error.toString();
+        if (errstring.includes("already in use") || errstring.includes("0x0")) {
+            console.log("Operator already initialized.")
+        } else {
+            throw error;
+        }
+    }
   });
 
 
@@ -220,6 +228,9 @@ describe("anchor-payroll-capstone-q1-26", () => {
 
   it("Staff is initialized!", async () => {
     // Add your test here.
+    const oldProtocolInfo = await program.account.protocolVault.fetch(protocol);
+    const olderRate = oldProtocolInfo.globalRate;
+
     const annualized_salary = new anchor.BN(50_000_000_000_000);
 
     await program.methods
@@ -238,11 +249,12 @@ describe("anchor-payroll-capstone-q1-26", () => {
     expect(Boolean(staffInfo.active)).to.equal(true);
     expect(Number(staffInfo.rate)).to.greaterThan(0);
     expect(Number(staffInfo.totalClaimed)).to.equal(0);
-    //expect(staffInfo.timeStarted).to.greaterThan(0);
 
     const protocolInfo = await program.account.protocolVault.fetch(protocol);
-    expect(Number(protocolInfo.globalRate)).to.greaterThan(0);
-    //expect(Number(protocolInfo.liability)).to.greaterThan(0);
+    expect(Number(protocolInfo.globalRate)).to.greaterThan(Number(olderRate));
+
+    let staffRate = Number(staffInfo.rate) + Number(olderRate);
+    expect(Number(staffRate)).to.equal(Number(protocolInfo.globalRate));
 
   });
 
@@ -251,6 +263,14 @@ describe("anchor-payroll-capstone-q1-26", () => {
 
   it("Deposit is complete!", async () => {
     // Add your test here.
+
+    const oldProtocolKtInfo = await getAccount(provider.connection, protocolKtokenAta);
+    const oldprotocolKtAmount = oldProtocolKtInfo.amount;
+
+    const oldProtocolInfo = await program.account.protocolVault.fetch(protocol);
+    const olderYieldAmount = oldProtocolInfo.yieldAmount;
+
+    //const deposit = new anchor.BN(5_000_000_000);
     const deposit = new anchor.BN(5_000_000_000_000);
     await program.methods
       .deposit(deposit)
@@ -278,9 +298,12 @@ describe("anchor-payroll-capstone-q1-26", () => {
       .rpc();
     const protocolInfo = await program.account.protocolVault.fetch(protocol);
     expect(Number(protocolInfo.yieldAmount)).to.greaterThan(0);
-
+    expect(Number(protocolInfo.yieldAmount)).to.greaterThan(Number(olderYieldAmount));
+    
     const protocolKtInfo = await getAccount(provider.connection, protocolKtokenAta);
     expect(Number(protocolKtInfo.amount)).to.greaterThan(0);
+    expect(Number(protocolKtInfo.amount)).to.greaterThan(Number(oldprotocolKtAmount));
+
   });
 
 
@@ -289,6 +312,21 @@ describe("anchor-payroll-capstone-q1-26", () => {
 
   it("Rebalance is complete!", async () => {
     // Add your test here.
+
+    const oldProtocolKtInfo = await getAccount(provider.connection, protocolKtokenAta);
+    const oldprotocolKtAmount = oldProtocolKtInfo.amount;
+
+    const oldProtocolInfo = await program.account.protocolVault.fetch(protocol);
+    const olderSafetyAmount = oldProtocolInfo.safetyAmount;
+    const olderYieldAmount = oldProtocolInfo.yieldAmount;
+
+    const oldPlatformInfo = await getAccount(provider.connection, platformAta);
+    const oldPlatformAmount = oldPlatformInfo.amount;
+
+    const oldKeeperInfo = await getAccount(provider.connection, keeperAta);
+    const oldKeeperAmount = oldKeeperInfo.amount;
+
+
     await program.methods
       .rebalance()
       .accountsStrict({
@@ -319,14 +357,23 @@ describe("anchor-payroll-capstone-q1-26", () => {
       })
       .signers([keeper])
       .rpc();
-    //const protocolInfo = await program.account.protocolVault.fetch(protocol);
-    //expect(Number(protocolInfo.safetyAmount)).to.greaterThan(0);
 
-    //const keeperInfo = await getAccount(provider.connection, keeperAta);
-    //expect(Number(keeperInfo.amount)).to.greaterThan(0);
+    const protocolInfo = await program.account.protocolVault.fetch(protocol);
+    expect(Number(protocolInfo.safetyAmount)).to.greaterThan(0);
+    expect(Number(protocolInfo.safetyAmount)).to.greaterThan(Number(olderSafetyAmount));
+    expect(Number(protocolInfo.yieldAmount)).to.lessThan(Number(olderYieldAmount));
 
-    //const platformInfo = await getAccount(provider.connection, platformAta);
-    //expect(Number(platformInfo.amount)).to.greaterThan(0);
+    const protocolKtInfo = await getAccount(provider.connection, protocolKtokenAta);
+    expect(Number(protocolKtInfo.amount)).to.lessThan(Number(oldprotocolKtAmount));
+
+
+    const keeperInfo = await getAccount(provider.connection, keeperAta);
+    expect(Number(keeperInfo.amount)).to.greaterThan(0);
+    expect(Number(keeperInfo.amount)).to.greaterThan(Number(oldKeeperAmount));
+
+    const platformInfo = await getAccount(provider.connection, platformAta);
+    expect(Number(platformInfo.amount)).to.greaterThan(0);
+    expect(Number(platformInfo.amount)).to.greaterThan(Number(oldPlatformAmount));
 
   });
 
@@ -341,6 +388,9 @@ describe("anchor-payroll-capstone-q1-26", () => {
     const oldProtocolInfo = await program.account.protocolVault.fetch(protocol);
     const olderSafetyAmount = oldProtocolInfo.safetyAmount;
     const olderYieldAmount = oldProtocolInfo.yieldAmount;
+
+    const oldOperatorInfo = await getAccount(provider.connection, operatorAta);
+    const oldOperatorAmount = oldOperatorInfo.amount;
 
     // Add your test here.
     await program.methods
@@ -367,12 +417,14 @@ describe("anchor-payroll-capstone-q1-26", () => {
         instructionSysvar: SYSVAR_INSTRUCTIONS_PUBKEY,
       })
       .rpc();
+
     const protocolInfo = await program.account.protocolVault.fetch(protocol);
     expect(Number(protocolInfo.safetyAmount)).to.lessThan(Number(olderSafetyAmount));
     expect(Number(protocolInfo.yieldAmount)).to.lessThanOrEqual(Number(olderYieldAmount));
 
     const operatorInfo = await getAccount(provider.connection, operatorAta);
     expect(Number(operatorInfo.amount)).to.greaterThanOrEqual(Number(deposit));
+    expect(Number(operatorInfo.amount)).to.greaterThan(Number(oldOperatorAmount));
 
   });
 
@@ -421,16 +473,17 @@ describe("anchor-payroll-capstone-q1-26", () => {
       })
       .signers([staff])
       .rpc();
+
     const staffAccountInfo = await program.account.staffAccount.fetch(staffAccount);
-    expect(Number(staffAccountInfo.totalClaimed)).to.greaterThanOrEqual(Number(oldertotalClaimed));
+    expect(Number(staffAccountInfo.totalClaimed)).to.greaterThan(Number(oldertotalClaimed));
 
     const StaffAtaInfo = await getAccount(provider.connection, staffAta);
-    expect(Number(StaffAtaInfo.amount)).to.greaterThanOrEqual(Number(oldStaffAmount));
+    expect(Number(StaffAtaInfo.amount)).to.greaterThan(Number(oldStaffAmount));
 
     const protocolInfo = await program.account.protocolVault.fetch(protocol);
-    expect(Number(protocolInfo.safetyAmount)).to.lessThanOrEqual(Number(olderSafetyAmount));
+    expect(Number(protocolInfo.safetyAmount)).to.lessThan(Number(olderSafetyAmount));
     expect(Number(protocolInfo.yieldAmount)).to.lessThanOrEqual(Number(olderYieldAmount));
-    expect(Number(protocolInfo.liability)).to.lessThanOrEqual(Number(olderLiability));
+    expect(Number(protocolInfo.liability)).to.lessThan(Number(olderLiability));
 
 
   });
@@ -440,8 +493,6 @@ describe("anchor-payroll-capstone-q1-26", () => {
 
   it("Offbaording is complete!", async () => {
     // Add your test here.
-
-    //const oldoperatorAta = await getAccount(provider.connection, operator.publicKey);
 
     const oldProtocolInfo = await program.account.protocolVault.fetch(protocol);
     const olderSafetyAmount = oldProtocolInfo.safetyAmount;
@@ -476,9 +527,6 @@ describe("anchor-payroll-capstone-q1-26", () => {
       })
       .rpc();
 
-    //const operatorInfo = await getAccount(provider.connection, operator.publicKey);
-    //expect(Number(operatorInfo.amount)).to.greaterThan(Number(oldoperatorAta));
-
     const protocolInfo = await program.account.protocolVault.fetch(protocol);
     expect(Number(protocolInfo.safetyAmount)).to.lessThanOrEqual(Number(olderSafetyAmount));
     expect(Number(protocolInfo.liability)).to.lessThanOrEqual(Number(olderLiability));
@@ -486,6 +534,7 @@ describe("anchor-payroll-capstone-q1-26", () => {
 
     const StaffAccountInfo = await program.account.staffAccount.fetch(staffAccount);
     expect(StaffAccountInfo.active).to.equals(false);
+    expect(Number(StaffAccountInfo.timeEnded)).to.greaterThan(0);
 
   });
 

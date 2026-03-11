@@ -25,8 +25,8 @@ pub struct BigFractionBytes {
 }
 
 #[derive(Debug, PartialEq, Eq, Default)]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-#[cfg_attr(feature = "serde", serde(deny_unknown_fields))]
+//#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+//#[cfg_attr(feature = "serde", serde(deny_unknown_fields))]
 #[zero_copy]
 #[repr(C)]
 pub struct PriceHeuristic {
@@ -37,18 +37,18 @@ pub struct PriceHeuristic {
 
 
 #[derive(Debug, PartialEq, Eq, Default)]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+//#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 #[zero_copy]
 #[repr(transparent)]
 pub struct PythConfiguration {
-    #[cfg_attr(feature = "serde", serde(with = "serde_string", default))]
+    //#[cfg_attr(feature = "serde", serde(with = "serde_string", default))]
     pub price: Pubkey,
 }
 
 
 #[derive(Debug, PartialEq, Eq, Default)]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-#[cfg_attr(feature = "serde", serde(deny_unknown_fields))]
+//#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+//#[cfg_attr(feature = "serde", serde(deny_unknown_fields))]
 #[zero_copy]
 #[repr(C)]
 pub struct ScopeConfiguration {
@@ -58,14 +58,14 @@ pub struct ScopeConfiguration {
 }
 
 #[derive(Debug, PartialEq, Eq, Default)]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-#[cfg_attr(feature = "serde", serde(deny_unknown_fields))]
+//#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+//#[cfg_attr(feature = "serde", serde(deny_unknown_fields))]
 #[zero_copy]
 #[repr(C)]
 pub struct SwitchboardConfiguration {
 
-    #[cfg_attr(feature = "serde", serde(with = "serde_string", default))]
+    //#[cfg_attr(feature = "serde", serde(with = "serde_string", default))]
     pub price_aggregator: Pubkey,
-    #[cfg_attr(feature = "serde", serde(with = "serde_string", default))]
+    //#[cfg_attr(feature = "serde", serde(with = "serde_string", default))]
     pub twap_aggregator: Pubkey,
 }
