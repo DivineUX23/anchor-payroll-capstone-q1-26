@@ -1,0 +1,25 @@
+[2026-03-12--03-54-36 INFO actix_server::builder] starting 5 workers
+[2026-03-12--03-54-36 INFO actix_server::server] Tokio runtime found; starting in existing Tokio runtime
+[2026-03-12--03-54-36 INFO actix_server::server] starting service: "actix-web-service-127.0.0.1:18488", workers: 5, listening on: 127.0.0.1:18488
+[2026-03-12--03-54-37 INFO parity_ws] Listening for new connections on 127.0.0.1:8900.
+[2026-03-12--03-56-14 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:59536.
+[2026-03-12--03-58-11 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:45550.
+[2026-03-12--03-58-26 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:38956.
+[2026-03-12--03-58-28 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:38960.
+[2026-03-12--03-58-30 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:38976.
+[2026-03-12--03-59-18 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:53256.
+[2026-03-12--03-59-25 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:53266.
+[2026-03-12--03-59-31 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:44800.
+[2026-03-12--03-59-32 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:44814.
+[2026-03-12--03-59-35 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:44830.
+[2026-03-12--04-01-00 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:39852.
+[2026-03-12--04-01-08 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:36580.
+[2026-03-12--04-01-10 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:36592.
+[2026-03-12--04-01-11 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:36608.
+[2026-03-12--04-01-17 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:36614.
+[2026-03-12--04-02-30 INFO actix_server::accept] accept thread stopped
+[2026-03-12--04-02-30 INFO actix_server::worker] shutting down idle worker
+[2026-03-12--04-02-30 INFO actix_server::worker] shutting down idle worker
+[2026-03-12--04-02-30 INFO actix_server::worker] shutting down idle worker
+[2026-03-12--04-02-30 INFO actix_server::worker] shutting down idle worker
+[2026-03-12--04-02-30 INFO actix_server::worker] shutting down idle worker

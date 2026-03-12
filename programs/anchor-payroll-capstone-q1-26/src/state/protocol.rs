@@ -70,8 +70,8 @@ impl ProtocolVault {
             .map_err(|_| ProgramError::InvalidAccountData)?;
 
         //let k_reserve = k_info.load()?;
-        let wad: u128 = 1_000_000_000_000_000_000;
-        //let wad: u128 = 1u128 << 64;
+        //let wad: u128 = 1_000_000_000_000_000_000;
+        let wad: u128 = 1u128 << 60;
 
         let available_sf = (k_reserve.liquidity.available_amount as u128)
             .checked_mul(wad)

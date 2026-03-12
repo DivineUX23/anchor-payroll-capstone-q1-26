@@ -159,7 +159,7 @@ describe("anchor-payroll-capstone-q1-26", () => {
     await mintTo(connection, operator.payer, USDC, operatorAta, operator.payer, 5_000_000_000_000);
 
 
-    /*
+    
     const reserveInfo = await connection.getAccountInfo(RESERVE);
     if (!reserveInfo) throw new Error("Cloned reserve not foound");
 
@@ -187,7 +187,7 @@ describe("anchor-payroll-capstone-q1-26", () => {
       })
     })
     await reserveHijackResp.json();
-    */
+    
 
   });
 
