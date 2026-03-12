@@ -45,6 +45,9 @@ impl ProtocolVault {
             //let to_safety = vault_target - self.safety_amount;
             let to_safety = vault_target
                 .saturating_sub(self.safety_amount);
+
+        msg!("Update protocol to safety: {}", to_safety);
+
             to_safety
         } else {
             0
@@ -67,8 +70,8 @@ impl ProtocolVault {
             .map_err(|_| ProgramError::InvalidAccountData)?;
 
         //let k_reserve = k_info.load()?;
-
-        let wad: u128 = 1u128 << 64;
+        let wad: u128 = 1_000_000_000_000_000_000;
+        //let wad: u128 = 1u128 << 64;
 
         let available_sf = (k_reserve.liquidity.available_amount as u128)
             .checked_mul(wad)
@@ -77,8 +80,19 @@ impl ProtocolVault {
         let borrowed_sf = (k_reserve.liquidity.borrowed_amount_sf[0] as u128) 
             | ((k_reserve.liquidity.borrowed_amount_sf[1] as u128) << 64);
 
-        let fees_sf = (k_reserve.liquidity.accumulated_protocol_fees_sf[0] as u128) 
+        let protocol_fees_sf = (k_reserve.liquidity.accumulated_protocol_fees_sf[0] as u128) 
             | ((k_reserve.liquidity.accumulated_protocol_fees_sf[1] as u128) << 64);
+
+        let referrer_fees_sf = (k_reserve.liquidity.accumulated_referrer_fees_sf[0] as u128) 
+            | ((k_reserve.liquidity.accumulated_referrer_fees_sf[1] as u128) << 64);
+
+        let pending_referrer_fees_sf = (k_reserve.liquidity.pending_referrer_fees_sf[0] as u128) 
+            | ((k_reserve.liquidity.pending_referrer_fees_sf[1] as u128) << 64);
+
+        let fees_sf = protocol_fees_sf
+            .checked_add(referrer_fees_sf)
+            .and_then(|x| x.checked_add(pending_referrer_fees_sf))
+            .ok_or(ProgramError::ArithmeticOverflow)?;
 
         let total_pool_usdc = available_sf
             .checked_add(borrowed_sf)
@@ -88,6 +102,9 @@ impl ProtocolVault {
 
         let total_ktoken: u128 = k_reserve.collateral.mint_total_supply as u128;
         
+        msg!("Initial Total USDC: {}", total_pool_usdc);
+        msg!("Initial Total K token: {}", total_ktoken);
+
         Ok((total_pool_usdc, total_ktoken))
     }
 

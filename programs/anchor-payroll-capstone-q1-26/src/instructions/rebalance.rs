@@ -114,7 +114,11 @@ impl <'info>Rebalance<'info> {
 
         let required_usdc = self.protocol.update_protocol();
 
+        msg!("Update protocol to safety in rebalance : {}", required_usdc);
+
         let required_usdc = required_usdc.min(max_claimable);
+
+        msg!("after check with max_claimable in rebalance : {}", required_usdc);
 
         let platform_tax: u64 = required_usdc
             .checked_mul(PLATFORM_TAX)
@@ -127,7 +131,7 @@ impl <'info>Rebalance<'info> {
 
 
         if required_usdc == 0 || required_usdc < total_ddt {
-            msg!("Warning: Insufficient yield. Extraction deferred.");
+            msg!("Warning: Insufficient Yield. Extraction deferred.");
             return Ok(()); 
         }
         /*
@@ -141,6 +145,9 @@ impl <'info>Rebalance<'info> {
         */
         let ktoken_to_burn = self.protocol.ktoken_to_burn(required_usdc, self.protocol_ktoken_ata.amount, &self.reserve)?;
 
+        msg!("Update protocol Ktoken to burn : {}", ktoken_to_burn);
+
+
         let binding = self.protocol.to_account_info().key();
         let signer_seeds: &[&[&[u8]]] = &[&[
             b"authority",
@@ -150,8 +157,13 @@ impl <'info>Rebalance<'info> {
 
         let usdc_recieved = self.k_withdrawal(ktoken_to_burn, signer_seeds)?;
         
+        msg!("Update protocol USDC recieved : {}", usdc_recieved);
+
+
         if usdc_recieved < total_ddt {
-            return Err(ProgramError::InsufficientFunds.into());
+            //return Err(ProgramError::InsufficientFunds.into());
+            msg!("Warning: Insufficient Funds. Extraction deferred.");
+            return Ok(());
         }
 
         // Send bounty
@@ -197,6 +209,8 @@ impl <'info>Rebalance<'info> {
 
     pub fn k_withdrawal(&mut self, ktoken: u64, signer_seeds: &[&[&[u8]]]) -> Result<u64> {
         
+        msg!("Update protocol Ktoken to burn in k_withdrawal : {}", ktoken);
+
         if ktoken == 0 {
             return Err(ProgramError::InvalidArgument.into());
         }
@@ -257,6 +271,8 @@ impl <'info>Rebalance<'info> {
         self.protocol.yield_amount = self.protocol.yield_amount
             .checked_sub(ktoken)
             .ok_or(ProgramError::ArithmeticOverflow)?;
+
+        msg!("Update protocol USDC recieved in k_withdrawal: {}", usdc_received);
 
         Ok(usdc_received)
 

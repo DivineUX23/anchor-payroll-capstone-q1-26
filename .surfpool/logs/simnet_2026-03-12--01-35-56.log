@@ -1,0 +1,54 @@
+[2026-03-12--01-35-56 INFO actix_server::builder] starting 5 workers
+[2026-03-12--01-35-56 INFO actix_server::server] Tokio runtime found; starting in existing Tokio runtime
+[2026-03-12--01-35-56 INFO actix_server::server] starting service: "actix-web-service-127.0.0.1:18488", workers: 5, listening on: 127.0.0.1:18488
+[2026-03-12--01-35-57 INFO parity_ws] Listening for new connections on 127.0.0.1:8900.
+[2026-03-12--01-37-26 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:52440.
+[2026-03-12--01-37-33 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:52442.
+[2026-03-12--01-37-35 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:35688.
+[2026-03-12--01-37-39 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:35700.
+[2026-03-12--01-38-40 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:48042.
+[2026-03-12--01-38-46 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:55858.
+[2026-03-12--01-38-48 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:55868.
+[2026-03-12--01-38-51 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:46276.
+[2026-03-12--01-42-04 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:52674.
+[2026-03-12--01-42-10 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:38860.
+[2026-03-12--01-42-12 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:38872.
+[2026-03-12--01-42-16 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:37582.
+[2026-03-12--01-43-16 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:44144.
+[2026-03-12--01-43-22 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:39440.
+[2026-03-12--01-43-25 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:39454.
+[2026-03-12--01-43-28 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:39466.
+[2026-03-12--01-44-56 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:41602.
+[2026-03-12--01-45-00 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:58428.
+[2026-03-12--01-45-00 INFO actix_web::middleware::logger] 127.0.0.1 "GET /config HTTP/1.1" 200 167 "http://127.0.0.1:18488/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0" 0.024371
+[2026-03-12--01-45-03 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:58430.
+[2026-03-12--01-45-06 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:58444.
+[2026-03-12--01-45-09 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:58456.
+[2026-03-12--01-45-12 INFO actix_web::middleware::logger] 127.0.0.1 "GET /accounts.txt?_rsc=3lb4g HTTP/1.1" 200 1599 "http://127.0.0.1:18488/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0" 0.019506
+[2026-03-12--01-45-12 INFO actix_web::middleware::logger] 127.0.0.1 "GET /_next/static/chunks/app/accounts/page-95a0936c2ea0cc61.js HTTP/1.1" 200 9964 "http://127.0.0.1:18488/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0" 0.003727
+[2026-03-12--01-45-50 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:57050.
+[2026-03-12--01-45-50 INFO actix_web::middleware::logger] 127.0.0.1 "GET /config HTTP/1.1" 200 167 "http://127.0.0.1:18488/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0" 0.001731
+[2026-03-12--01-48-29 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:56028.
+[2026-03-12--01-48-35 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:58228.
+[2026-03-12--01-48-37 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:58238.
+[2026-03-12--01-48-40 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:58250.
+[2026-03-12--01-49-51 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:51386.
+[2026-03-12--01-49-58 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:51396.
+[2026-03-12--01-50-00 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:38578.
+[2026-03-12--01-50-05 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:38582.
+[2026-03-12--01-50-07 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:38590.
+[2026-03-12--01-50-21 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:40418.
+[2026-03-12--01-50-28 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:50538.
+[2026-03-12--01-50-30 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:50540.
+[2026-03-12--01-50-34 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:49030.
+[2026-03-12--01-51-06 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:37022.
+[2026-03-12--01-51-20 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:41566.
+[2026-03-12--01-51-26 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:41578.
+[2026-03-12--01-51-28 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:49364.
+[2026-03-12--01-51-32 INFO parity_ws::io] Accepted a new tcp connection from 127.0.0.1:49376.
+[2026-03-12--01-53-44 INFO actix_server::accept] accept thread stopped
+[2026-03-12--01-53-44 INFO actix_server::worker] shutting down idle worker
+[2026-03-12--01-53-44 INFO actix_server::worker] shutting down idle worker
+[2026-03-12--01-53-44 INFO actix_server::worker] shutting down idle worker
+[2026-03-12--01-53-44 INFO actix_server::worker] shutting down idle worker
+[2026-03-12--01-53-44 INFO actix_server::worker] shutting down idle worker
