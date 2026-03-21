@@ -327,4 +327,3 @@ bytemuck    = { version = "1.20.0", features = ["min_const_generics"] }
 
 ## License
 
-MIT
