@@ -1,10 +1,10 @@
 # Atlas Payroll
 
-A Solana smart contract that streams employee salaries per second and routes idle employer capital into [Kamino Finance](https://kamino.finance) to earn yield — instead of letting it sit dormant in a commercial bank account.
+A Solana smart contract that streams employee salaries per second and routes idle employer capital into [Kamino Finance](https://kamino.finance) to earn yield, instead of letting it sit dormant in a commercial bank account.
 
 Built with Rust, Anchor, and tested against a cloned mainnet Kamino state using Surfpool.
 
-> **Technical article:** [Atlas Payroll — Streaming Payroll with Operational Capital Yield on Solana](https://medium.com/@divineigbinoba23/14c5f917e341?source=friends_link&sk=441c9573649b027356b95998172215f4)
+> **Technical article:** [Atlas Payroll: Streaming Payroll with Operational Capital Yield on Solana](https://medium.com/@divineigbinoba23/14c5f917e341?source=friends_link&sk=441c9573649b027356b95998172215f4)
 
 ---
 
@@ -44,9 +44,9 @@ Employer USDC → Atlas Contract → Kamino Finance (earning ~13% APY)
 2. Operator deposits USDC → contract routes it to Kamino → Kamino mints kUSDC to the protocol.
 3. Operator initialises employee accounts with an annual salary. The contract derives the per-second rate and accrual begins immediately.
 4. Keeper monitors on-chain events (employee claims, operator withdrawals, staff offboarding). When the safety vault is drawn down, it calls `rebalance`, which redeems kUSDC from Kamino to top up the vault and earns the bounty.
-5. Operator can withdraw capital at any time — but never more than the net assets minus total employee liability.
+5. Operator can withdraw capital at any time, but never more than the net assets minus total employee liability.
 6. Employees call `staff_claim` to withdraw accrued salary. Funds come from the safety vault first; if insufficient, the shortfall is sourced directly from Kamino.
-7. Operator offboards an employee via `staff_offboard` — all outstanding pay is sent immediately, accrual stops, and the employee's rate is removed from the global payroll rate.
+7. Operator offboards an employee via `staff_offboard`, all outstanding pay is sent immediately, accrual stops, and the employee's rate is removed from the global payroll rate.
 8. Once a staff account has a zero outstanding balance, the operator closes it with `collect_staff` and reclaims the SOL rent.
 
 ---
@@ -147,12 +147,12 @@ pub fn get_sighash(name: &str) -> [u8; 8] {
 ```
 
 Two Kamino instructions are used:
-- `deposit_reserve_liquidity` — deposit USDC, receive kUSDC
-- `redeem_reserve_collateral` — burn kUSDC, receive USDC + accrued yield
+- `deposit_reserve_liquidity`: deposit USDC, receive kUSDC
+- `redeem_reserve_collateral`: burn kUSDC, receive USDC + accrued yield
 
 ### Kamino's u68.60 fixed-point format
 
-Kamino stores liquidity values using `2^60` as the scale factor — not the standard `10^18`:
+Kamino stores liquidity values using `2^60` as the scale factor not the standard `10^18`:
 
 ```rust
 let wad: u128 = 1u128 << 60;
@@ -160,7 +160,7 @@ let wad: u128 = 1u128 << 60;
 
 Using the wrong WAD produces completely incorrect exchange rate calculations.
 
-### u128 alignment — split into two u64s
+### u128 alignment: split into two u64s
 
 Kamino's IDL defines several fields as `u128` (requires 16-byte alignment). Because Solana accounts start with an 8-byte discriminator, subsequent fields are statistically 8-byte aligned. `bytemuck` cannot guarantee 16-byte alignment across machines, so these fields are stored as `[u64; 2]` and reconstructed at runtime:
 
@@ -194,7 +194,7 @@ If the accrued salary is smaller than the gas cost to claim it, the transaction 
 
 ### Keeper deferred-return guards
 
-The rebalance instruction has two silent `Ok(())` returns — one before and one after the Kamino redemption — to ensure the keeper never loses a transaction fee attempting a rebalance that can't cover its own cost.
+The rebalance instruction has two silent `Ok(())` returns one before and one after the Kamino redemption to ensure the keeper never loses a transaction fee attempting a rebalance that can't cover its own cost.
 
 ---
 
@@ -211,7 +211,7 @@ pub const PLATFORM_TAX:       u64    = 50;       // 0.5% (50 basis points)
 
 ## Testing
 
-Tests run against a cloned Kamino mainnet state inside [Surfpool](https://github.com/the-turbin3/surfpool) — because Kamino's lending markets do not exist on devnet.
+Tests run against a cloned Kamino mainnet state inside [Surfpool](https://github.com/the-turbin3/surfpool) because Kamino's lending markets do not exist on devnet.
 
 ### Setup steps performed in `before()`
 
